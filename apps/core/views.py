@@ -20,25 +20,27 @@ CONTACT_ITEMS = [
     ('bi-globe', 'Website', 'windowsexp.co.zw', 'https://windowsexp.co.zw'),
 ]
 
-stats = [
+ABOUT_STATS = [
     ('bi-car-front', 'Cars Serviced', '500+'),
     ('bi-clock', 'Always Available', '24/7'),
     ('bi-percent', 'First Visit Off', '20%'),
     ('bi-tools', 'Core Services', '4'),
 ]
 
+
 def home(request):
     services = Service.objects.filter(is_active=True).prefetch_related('pricing')[:4]
     featured = GalleryItem.objects.filter(is_featured=True)[:6]
-    return render(request, 'core/home.html', {'services': services, 'featured': featured, 'why_items': WHY_ITEMS})
+    return render(request, 'core/home.html', {
+        'services': services,
+        'featured': featured,
+        'why_items': WHY_ITEMS,
+    })
+
 
 def about(request):
-    stats = [
-        ('bi-car-front', 'Cars Serviced', '500+'),
-        ('bi-clock', 'Always Available', '24/7'),
-        ('bi-percent', 'First Visit Off', '20%'),
-        ('bi-tools', 'Core Services', '4'),
-    ]
-    return render(request, 'core/about.html', {'stats': stats})
+    return render(request, 'core/about.html', {'stats': ABOUT_STATS})
+
+
 def contact(request):
     return render(request, 'core/contact.html', {'contact_items': CONTACT_ITEMS})
