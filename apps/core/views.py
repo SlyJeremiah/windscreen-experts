@@ -33,8 +33,12 @@ def home(request):
     return render(request, 'core/home.html', {'services': services, 'featured': featured, 'why_items': WHY_ITEMS})
 
 def about(request):
-    stats = [('Cars Serviced','500+'),('Always Available','24/7'),('First Visit Off','20%'),('Core Services','4')]
+    stats = [
+        ('bi-car-front', 'Cars Serviced', '500+'),
+        ('bi-clock', 'Always Available', '24/7'),
+        ('bi-percent', 'First Visit Off', '20%'),
+        ('bi-tools', 'Core Services', '4'),
+    ]
     return render(request, 'core/about.html', {'stats': stats})
-
 def contact(request):
     return render(request, 'core/contact.html', {'contact_items': CONTACT_ITEMS})
