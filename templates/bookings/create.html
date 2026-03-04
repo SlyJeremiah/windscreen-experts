@@ -1,21 +1,76 @@
 {% extends 'base.html' %}
 {% block title %}Book a Service – Windscreen Experts{% endblock %}
+{% block extra_css %}
+<style>
+  .page-hero {
+    position: relative; overflow: hidden;
+    min-height: 38vh; display: flex; align-items: center;
+    background: #060d24;
+  }
+  .page-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1507136566006-cfc505b114fc?w=1600&q=80&auto=format&fit=crop');
+    background-size: cover; background-position: center 40%;
+    opacity: 0.2;
+  }
+  .page-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(6,13,36,0.96) 0%, rgba(6,13,36,0.55) 100%);
+  }
+  .booking-section {
+    position: relative; overflow: hidden;
+    background: var(--we-navy);
+  }
+  .booking-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=1400&q=70&auto=format&fit=crop');
+    background-size: cover; background-position: center;
+    opacity: 0.05;
+  }
+  .form-control, .form-select {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: #fff !important; border-radius: 8px !important;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--we-bright) !important;
+    box-shadow: 0 0 0 .2rem rgba(47,95,245,.2) !important;
+  }
+  .form-control::placeholder { color: rgba(255,255,255,.3) !important; }
+  .form-select option { background: #0a1a4a; }
+  .step-label {
+    font-size: .72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--we-bright); margin-bottom: 16px;
+    padding-bottom: 8px; border-bottom: 1px solid rgba(47,95,245,0.25);
+  }
+  .perk-item { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: rgba(255,255,255,.7); }
+  .perk-item i { color: #4eff91; }
+</style>
+{% endblock %}
 {% block content %}
-<section class="py-5 bg-we-dark text-white" style="min-height:30vh;display:flex;align-items:center">
-  <div class="container py-4">
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container position-relative py-5" style="z-index:2">
     <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Get Started</p>
-    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">Book Your Service</h1>
-    <p class="text-white-50 fs-5">First-time customers receive <span class="text-we fw-bold">20% off</span>. We'll confirm within hours.</p>
+    <h1 class="text-white" style="font-size:clamp(2.5rem,7vw,5rem)">Book Your Service</h1>
+    <p class="text-white-50 fs-5 mt-2">First-time customers receive <span class="text-we fw-bold">20% off</span>. We confirm within hours.</p>
   </div>
 </section>
-<section class="py-5 bg-we-navy text-white">
-  <div class="container py-4">
-    <div class="row justify-content-center">
+
+<!-- BOOKING FORM -->
+<section class="booking-section py-5 text-white">
+  <div class="booking-bg"></div>
+  <div class="container py-4 position-relative" style="z-index:1">
+    <div class="row g-5">
       <div class="col-lg-8">
         <div class="p-4 p-md-5 rounded-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1)">
           <form method="post" novalidate>
             {% csrf_token %}
-            <h5 class="fw-bold mb-4 text-uppercase" style="letter-spacing:2px;font-size:.85rem;color:var(--we-bright)">Your Details</h5>
+
+            <div class="step-label">① Your Details</div>
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">First Name *</label>
@@ -25,12 +80,10 @@
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Last Name *</label>
                 {{ form.last_name }}
-                {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Email *</label>
                 {{ form.email }}
-                {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Phone *</label>
@@ -38,7 +91,7 @@
               </div>
             </div>
 
-            <h5 class="fw-bold mb-4 mt-2 text-uppercase" style="letter-spacing:2px;font-size:.85rem;color:var(--we-bright)">Service Details</h5>
+            <div class="step-label">② Service & Vehicle</div>
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Service *</label>
@@ -62,7 +115,7 @@
               </div>
             </div>
 
-            <h5 class="fw-bold mb-4 mt-2 text-uppercase" style="letter-spacing:2px;font-size:.85rem;color:var(--we-bright)">Schedule</h5>
+            <div class="step-label">③ Schedule & Location</div>
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Preferred Date *</label>
@@ -73,7 +126,7 @@
                 {{ form.preferred_time }}
               </div>
               <div class="col-12">
-                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Your Location (for mobile service) *</label>
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Your Location *</label>
                 {{ form.location }}
               </div>
               <div class="col-12">
@@ -82,31 +135,39 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary-we w-100 py-3 mt-2" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px">
+            <button type="submit" class="btn btn-primary-we w-100 py-3 mt-2"
+                    style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;box-shadow:0 8px 24px rgba(47,95,245,0.35)">
               Submit Booking Request
             </button>
-            <p class="text-white-50 small text-center mt-3">We'll contact you to confirm your booking. No payment required.</p>
+            <p class="text-white-50 small text-center mt-3">No payment required. We'll contact you to confirm.</p>
           </form>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <div class="p-4 rounded-4 mb-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+          <h6 class="fw-bold mb-3 text-uppercase" style="letter-spacing:2px;font-size:.75rem">Why Book With Us</h6>
+          <div class="d-flex flex-column gap-3">
+            <div class="perk-item"><i class="bi bi-check-circle-fill"></i> 20% off for first-time customers</div>
+            <div class="perk-item"><i class="bi bi-check-circle-fill"></i> We come to your location</div>
+            <div class="perk-item"><i class="bi bi-check-circle-fill"></i> Most jobs done under 1 hour</div>
+            <div class="perk-item"><i class="bi bi-check-circle-fill"></i> No payment until job is done</div>
+            <div class="perk-item"><i class="bi bi-check-circle-fill"></i> Available 24/7</div>
+          </div>
+        </div>
+        <div class="p-4 rounded-4" style="background:rgba(47,95,245,0.1);border:1px solid rgba(47,95,245,0.25)">
+          <h6 class="fw-bold mb-3 text-uppercase" style="letter-spacing:2px;font-size:.75rem">Need Help?</h6>
+          <a href="https://wa.me/263719888441" target="_blank" class="btn w-100 mb-2 fw-bold" style="background:#25d366;color:#fff;border-radius:8px">
+            <i class="bi bi-whatsapp me-2"></i>Chat on WhatsApp
+          </a>
+          <a href="tel:+263777867884" class="btn btn-outline-light w-100" style="border-radius:8px">
+            <i class="bi bi-telephone me-2"></i>+263 77 786 7884
+          </a>
         </div>
       </div>
     </div>
   </div>
 </section>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-  .form-control, .form-select {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    color: #fff !important;
-    border-radius: 8px !important;
-  }
-  .form-control:focus, .form-select:focus {
-    border-color: var(--we-bright) !important;
-    box-shadow: 0 0 0 0.2rem rgba(47,95,245,0.2) !important;
-  }
-  .form-control::placeholder { color: rgba(255,255,255,0.3) !important; }
-  .form-select option { background: #0a1a4a; }
-</style>
 {% endblock %}
