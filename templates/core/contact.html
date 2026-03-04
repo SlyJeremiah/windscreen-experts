@@ -1,41 +1,114 @@
 {% extends 'base.html' %}
 {% block title %}Contact Us – Windscreen Experts{% endblock %}
+{% block extra_css %}
+<style>
+  .page-hero {
+    position: relative; overflow: hidden;
+    min-height: 40vh; display: flex; align-items: center;
+    background: #060d24;
+  }
+  .page-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1600&q=80&auto=format&fit=crop');
+    background-size: cover; background-position: center 40%;
+    opacity: 0.18;
+  }
+  .page-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(6,13,36,0.96) 0%, rgba(6,13,36,0.55) 100%);
+  }
+  .contact-section {
+    position: relative; overflow: hidden;
+    background: var(--we-navy);
+  }
+  .contact-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1400&q=70&auto=format&fit=crop');
+    background-size: cover; background-position: center;
+    opacity: 0.05;
+  }
+  .contact-info-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    transition: all .3s;
+  }
+  .contact-info-card:hover {
+    border-color: rgba(47,95,245,0.35);
+    background: rgba(47,95,245,0.07);
+    transform: translateY(-3px);
+  }
+  .ci-icon-box {
+    width: 48px; height: 48px; flex-shrink: 0;
+    background: rgba(47,95,245,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+</style>
+{% endblock %}
 {% block content %}
-<section class="py-5 bg-we-dark text-white" style="min-height:35vh;display:flex;align-items:center">
-  <div class="container py-4">
-    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Get In Touch</p>
-    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">Contact Us</h1>
-    <p class="text-white-50 fs-5">We're always open. Reach us any way you prefer.</p>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container position-relative py-5" style="z-index:2">
+    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Reach Out</p>
+    <h1 class="text-white" style="font-size:clamp(2.5rem,7vw,5rem)">Contact Us</h1>
+    <p class="text-white-50 fs-5 mt-2">We're always open. Reach us any way you prefer.</p>
   </div>
 </section>
-<section class="py-5 bg-we-navy text-white">
-  <div class="container py-4">
-    <div class="row g-5">
-      <div class="col-lg-5">
-        <h4 class="fw-bold mb-4">Contact Information</h4>
-        {% for icon, label, value, href in contact_items %}
-        <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;background:rgba(47,95,245,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="bi {{ icon }} text-we"></i>
-          </div>
+
+<!-- CONTACT INFO GRID -->
+<section class="contact-section py-5 text-white">
+  <div class="contact-bg"></div>
+  <div class="container py-4 position-relative" style="z-index:1">
+    <div class="row g-3 mb-5">
+      {% for icon, label, value, href in contact_items %}
+      <div class="col-md-6 col-lg-4">
+        <div class="contact-info-card p-4 h-100 d-flex align-items-center gap-3">
+          <div class="ci-icon-box text-we"><i class="bi {{ icon }}"></i></div>
           <div>
-            <div class="text-uppercase small fw-bold opacity-50 mb-1" style="letter-spacing:2px">{{ label }}</div>
-            {% if href %}<a href="{{ href }}" class="text-white fw-semibold text-decoration-none">{{ value }}</a>
-            {% else %}<span class="fw-semibold">{{ value }}</span>{% endif %}
+            <div class="text-uppercase small fw-bold opacity-50 mb-1" style="letter-spacing:2px;font-size:.7rem">{{ label }}</div>
+            {% if href %}
+            <a href="{{ href }}" class="text-white fw-semibold text-decoration-none" {% if 'http' in href %}target="_blank"{% endif %}>{{ value }}</a>
+            {% else %}
+            <span class="fw-semibold">{{ value }}</span>
+            {% endif %}
           </div>
         </div>
-        {% endfor %}
       </div>
-      <div class="col-lg-7">
-        <div class="p-4 rounded-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
-          <h4 class="fw-bold mb-4">Send a Message</h4>
-          <p class="text-white-50 small mb-4">Have a question or want a quote? Use the form below or head to our <a href="{% url 'inquiry_create' %}" class="text-we">inquiries page</a>.</p>
-          <a href="{% url 'inquiry_create' %}" class="btn btn-primary-we w-100 py-3" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px">Go to Inquiries Form</a>
-          <div class="text-center mt-3 text-white-50 small">or</div>
-          <a href="{% url 'booking_create' %}" class="btn btn-outline-light w-100 py-3 mt-3" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px">Book a Service Now</a>
+      {% endfor %}
+    </div>
+
+    <!-- Action cards -->
+    <div class="row g-4 mt-2">
+      <div class="col-md-6">
+        <div class="p-5 rounded-4 text-center h-100 d-flex flex-column align-items-center justify-content-center"
+             style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25)">
+          <i class="bi bi-whatsapp fs-1 mb-3" style="color:#25d366"></i>
+          <h5 class="fw-bold mb-2">Chat on WhatsApp</h5>
+          <p class="text-white-50 small mb-4">Get a quick response on WhatsApp. We typically reply within minutes.</p>
+          <a href="https://wa.me/263719888441?text=Hi%20Windscreen%20Experts%2C%20I%20would%20like%20to%20book%20a%20service."
+             target="_blank" class="btn px-4 fw-bold" style="background:#25d366;color:#fff;border-radius:8px">
+            Open WhatsApp Chat
+          </a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-5 rounded-4 text-center h-100 d-flex flex-column align-items-center justify-content-center"
+             style="background:rgba(47,95,245,0.1);border:1px solid rgba(47,95,245,0.25)">
+          <i class="bi bi-calendar-check fs-1 text-we mb-3"></i>
+          <h5 class="fw-bold mb-2">Book a Service</h5>
+          <p class="text-white-50 small mb-4">Fill in our booking form and we'll confirm your appointment promptly.</p>
+          <a href="{% url 'booking_create' %}" class="btn btn-primary-we px-4 fw-bold" style="border-radius:8px;font-family:'Bebas Neue',sans-serif;letter-spacing:2px">
+            Book Now – 20% Off
+          </a>
         </div>
       </div>
     </div>
   </div>
 </section>
+
 {% endblock %}
