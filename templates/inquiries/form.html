@@ -2,24 +2,65 @@
 {% block title %}Inquiries – Windscreen Experts{% endblock %}
 {% block extra_css %}
 <style>
-  .form-control,.form-select{background:rgba(255,255,255,0.05)!important;border:1px solid rgba(255,255,255,0.12)!important;color:#fff!important;border-radius:8px!important}
-  .form-control:focus,.form-select:focus{border-color:var(--we-bright)!important;box-shadow:0 0 0 .2rem rgba(47,95,245,.2)!important}
-  .form-control::placeholder{color:rgba(255,255,255,.3)!important}
+  .page-hero {
+    position: relative; overflow: hidden;
+    min-height: 40vh; display: flex; align-items: center;
+    background: #060d24;
+  }
+  .page-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1471479917193-f00955256257?w=1600&q=80&auto=format&fit=crop');
+    background-size: cover; background-position: center 50%;
+    opacity: 0.18;
+  }
+  .page-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(6,13,36,0.96) 0%, rgba(6,13,36,0.55) 100%);
+  }
+  .inquiry-section {
+    position: relative; overflow: hidden;
+    background: var(--we-navy);
+  }
+  .inquiry-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1400&q=70&auto=format&fit=crop');
+    background-size: cover; background-position: center;
+    opacity: 0.05;
+  }
+  .form-control, .form-select {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: #fff !important; border-radius: 8px !important;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--we-bright) !important;
+    box-shadow: 0 0 0 .2rem rgba(47,95,245,.2) !important;
+  }
+  .form-control::placeholder { color: rgba(255,255,255,.3) !important; }
+  .form-select option { background: #0a1a4a; }
 </style>
 {% endblock %}
 {% block content %}
-<section class="py-5 bg-we-dark text-white" style="min-height:35vh;display:flex;align-items:center">
-  <div class="container py-4">
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container position-relative py-5" style="z-index:2">
     <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Have a Question?</p>
-    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">Send an Inquiry</h1>
-    <p class="text-white-50 fs-5">We'll get back to you as soon as possible.</p>
+    <h1 class="text-white" style="font-size:clamp(2.5rem,7vw,5rem)">Send an Inquiry</h1>
+    <p class="text-white-50 fs-5 mt-2">We'll get back to you as soon as possible.</p>
   </div>
 </section>
-<section class="py-5 bg-we-navy text-white">
-  <div class="container py-4">
-    <div class="row justify-content-center">
+
+<!-- FORM -->
+<section class="inquiry-section py-5 text-white">
+  <div class="inquiry-bg"></div>
+  <div class="container py-4 position-relative" style="z-index:1">
+    <div class="row g-5">
       <div class="col-lg-7">
         <div class="p-4 p-md-5 rounded-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1)">
+          <h4 class="fw-bold mb-4">Your Message</h4>
           <form method="post" novalidate>
             {% csrf_token %}
             {% for field in form %}
@@ -33,27 +74,44 @@
           </form>
         </div>
       </div>
-      <div class="col-lg-4 d-none d-lg-block">
-        <div class="ps-4">
-          <h5 class="fw-bold mb-4">Other Ways to Reach Us</h5>
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <i class="bi bi-telephone-fill text-we fs-5"></i>
-            <div><div class="text-white-50 small">Phone</div><a href="tel:+263777867884" class="text-white text-decoration-none fw-semibold">+263 77 786 7884</a></div>
+      <div class="col-lg-5">
+        <h5 class="fw-bold mb-4">Other Ways to Reach Us</h5>
+        <div class="d-flex flex-column gap-3">
+          <a href="tel:+263777867884" class="d-flex align-items-center gap-3 p-3 rounded-3 text-white text-decoration-none"
+             style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all .2s"
+             onmouseover="this.style.borderColor='rgba(47,95,245,0.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <div style="width:44px;height:44px;background:rgba(47,95,245,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="bi bi-telephone-fill text-we"></i>
+            </div>
+            <div><div class="text-white-50 small" style="font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase">Phone</div><div class="fw-semibold">+263 77 786 7884</div></div>
+          </a>
+          <a href="https://wa.me/263719888441" target="_blank" class="d-flex align-items-center gap-3 p-3 rounded-3 text-white text-decoration-none"
+             style="background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.2)">
+            <div style="width:44px;height:44px;background:rgba(37,211,102,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="bi bi-whatsapp" style="color:#25d366"></i>
+            </div>
+            <div><div class="text-white-50 small" style="font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase">WhatsApp</div><div class="fw-semibold">+263 71 988 8441</div></div>
+          </a>
+          <a href="mailto:munashe@windowscreens.co.zw" class="d-flex align-items-center gap-3 p-3 rounded-3 text-white text-decoration-none"
+             style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+            <div style="width:44px;height:44px;background:rgba(47,95,245,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="bi bi-envelope-fill text-we"></i>
+            </div>
+            <div><div class="text-white-50 small" style="font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase">Email</div><div class="fw-semibold">munashe@windowscreens.co.zw</div></div>
+          </a>
+          <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+            <div style="width:44px;height:44px;background:rgba(47,95,245,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="bi bi-geo-alt-fill text-we"></i>
+            </div>
+            <div><div class="text-white-50 small" style="font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase">Location</div><div class="fw-semibold text-white">Mount Pleasant Shops, Harare</div></div>
           </div>
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <i class="bi bi-whatsapp text-we fs-5"></i>
-            <div><div class="text-white-50 small">WhatsApp</div><a href="https://wa.me/263719888441" class="text-white text-decoration-none fw-semibold">+263 71 988 8441</a></div>
-          </div>
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <i class="bi bi-envelope-fill text-we fs-5"></i>
-            <div><div class="text-white-50 small">Email</div><a href="mailto:munashe@windowscreens.co.zw" class="text-white text-decoration-none fw-semibold">munashe@windowscreens.co.zw</a></div>
-          </div>
-          <div class="mt-5">
-            <a href="{% url 'booking_create' %}" class="btn btn-outline-light w-100 py-3" style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px">Book a Service Instead</a>
-          </div>
+        </div>
+        <div class="mt-4">
+          <a href="{% url 'booking_create' %}" class="btn btn-outline-light w-100 py-3" style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px">Book a Service Instead</a>
         </div>
       </div>
     </div>
   </div>
 </section>
+
 {% endblock %}
