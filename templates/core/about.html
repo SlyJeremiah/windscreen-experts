@@ -1,20 +1,78 @@
 {% extends 'base.html' %}
 {% block title %}About Us – Windscreen Experts{% endblock %}
+{% block extra_css %}
+<style>
+  .page-hero {
+    position: relative; overflow: hidden;
+    min-height: 45vh; display: flex; align-items: center;
+    background: #060d24;
+  }
+  .page-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80&auto=format&fit=crop');
+    background-size: cover; background-position: center 30%;
+    opacity: 0.15;
+  }
+  .page-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(6,13,36,0.95) 0%, rgba(6,13,36,0.6) 100%);
+  }
+  .team-section {
+    position: relative; overflow: hidden;
+    background: var(--we-navy);
+  }
+  .team-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=1400&q=70&auto=format&fit=crop');
+    background-size: cover; background-position: center;
+    opacity: 0.05;
+  }
+  .values-section {
+    position: relative; overflow: hidden;
+    background: var(--we-dark);
+  }
+  .values-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1400&q=70&auto=format&fit=crop');
+    background-size: cover; background-position: center 60%;
+    opacity: 0.06;
+  }
+  .stat-card-about {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    transition: all .3s;
+  }
+  .stat-card-about:hover {
+    border-color: rgba(47,95,245,0.4);
+    background: rgba(47,95,245,0.08);
+    transform: translateY(-4px);
+  }
+</style>
+{% endblock %}
 {% block content %}
-<section class="py-5 bg-we-dark text-white" style="min-height:40vh;display:flex;align-items:center">
-  <div class="container py-4">
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container position-relative py-5" style="z-index:2">
     <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Our Story</p>
-    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">About Windscreen Experts</h1>
+    <h1 class="text-white" style="font-size:clamp(2.5rem,7vw,5rem)">About Windscreen Experts</h1>
+    <p class="text-white-50 fs-5 mt-2">Harare's trusted auto glass specialists since day one.</p>
   </div>
 </section>
-<section class="py-5 bg-we-navy text-white">
-  <div class="container py-4">
+
+<!-- WHO WE ARE -->
+<section class="team-section py-5 text-white">
+  <div class="team-bg"></div>
+  <div class="container py-4 position-relative" style="z-index:1">
     <div class="row g-5 align-items-center">
       <div class="col-lg-6">
         <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Who We Are</p>
         <h2 style="font-size:2.5rem">Harare's Trusted Auto Glass Specialists</h2>
         <p class="text-white-50 mt-3">Windscreen Experts was founded with one mission: to deliver fast, reliable, and affordable auto glass services to the people of Harare. We're a mobile-first team — meaning we come to you, wherever you are in the city.</p>
-        <p class="text-white-50">Our technicians are trained professionals with years of experience in windscreen repair, headlight restoration, and precision tint installation. We use only premium-grade materials and industry-leading techniques to ensure every job meets the highest standards.</p>
+        <p class="text-white-50">Our technicians are trained professionals with years of experience in windscreen repair, headlight restoration, and precision tint installation. We use only premium-grade materials and industry-leading techniques.</p>
         <p class="text-white-50">As a first-time customer, you'll automatically receive 20% off your first service — because we believe in earning your trust from day one.</p>
         <a href="{% url 'booking_create' %}" class="btn btn-primary-we mt-3 px-4" style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px">Book a Service</a>
       </div>
@@ -22,9 +80,10 @@
         <div class="row g-3">
           {% for icon, label, value in stats %}
           <div class="col-6">
-            <div class="p-4 rounded-3 text-center" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--we-bright)">{{ value }}</div>
-              <div class="text-white-50 small text-uppercase" style="letter-spacing:2px">{{ label }}</div>
+            <div class="stat-card-about p-4 text-center">
+              <i class="bi {{ icon }} text-we fs-3 mb-2 d-block"></i>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--we-bright);line-height:1">{{ value }}</div>
+              <div class="text-white-50 small text-uppercase mt-1" style="letter-spacing:2px">{{ label }}</div>
             </div>
           </div>
           {% endfor %}
@@ -33,27 +92,31 @@
     </div>
   </div>
 </section>
-<section class="py-5 bg-we-dark text-white">
-  <div class="container py-4">
+
+<!-- VALUES -->
+<section class="values-section py-5 text-white">
+  <div class="values-bg"></div>
+  <div class="container py-4 position-relative" style="z-index:1">
+    <p class="text-we fw-bold text-uppercase mb-2 text-center" style="letter-spacing:3px;font-size:.75rem">What Drives Us</p>
     <h2 class="text-center mb-5" style="font-size:2.5rem">Our Values</h2>
     <div class="row g-4 text-center">
       <div class="col-md-4">
-        <div class="p-4">
-          <div class="fs-1 text-we mb-3">⚡</div>
+        <div class="p-4 rounded-4" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)">
+          <div class="fs-1 mb-3">⚡</div>
           <h5 class="fw-bold">Speed</h5>
           <p class="text-white-50 small">We respect your time. Fast turnaround without cutting corners.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="p-4">
-          <div class="fs-1 text-we mb-3">🏆</div>
+        <div class="p-4 rounded-4" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)">
+          <div class="fs-1 mb-3">🏆</div>
           <h5 class="fw-bold">Quality</h5>
           <p class="text-white-50 small">Premium materials and certified techniques. Every job done right.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="p-4">
-          <div class="fs-1 text-we mb-3">💙</div>
+        <div class="p-4 rounded-4" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)">
+          <div class="fs-1 mb-3">💙</div>
           <h5 class="fw-bold">Integrity</h5>
           <p class="text-white-50 small">Transparent pricing. No surprises. No hidden fees. Ever.</p>
         </div>
@@ -61,4 +124,15 @@
     </div>
   </div>
 </section>
+
+<!-- CTA -->
+<section class="py-5 text-white text-center position-relative overflow-hidden" style="background:linear-gradient(135deg,var(--we-navy),var(--we-blue))">
+  <div class="position-absolute inset-0" style="inset:0;background-image:url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=60&auto=format&fit=crop');background-size:cover;background-position:center;opacity:.08"></div>
+  <div class="container py-4 position-relative" style="z-index:1">
+    <h2 style="font-size:3rem">Ready to Work With Us?</h2>
+    <p class="text-white-75 fs-5 mb-4">Book your service today and get 20% off as a first-time customer.</p>
+    <a href="{% url 'booking_create' %}" class="btn btn-light btn-lg px-5 fw-bold" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px">Book Now</a>
+  </div>
+</section>
+
 {% endblock %}
