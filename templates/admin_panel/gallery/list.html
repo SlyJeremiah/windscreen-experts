@@ -1,0 +1,35 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Gallery – Admin{% endblock %}
+{% block page_title %}Gallery{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <span class="text-muted small">{{ items.count }} item{{ items.count|pluralize }}</span>
+  <a href="{% url 'admin_gallery_add' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Photo</a>
+</div>
+<div class="row g-3">
+  {% for item in items %}
+  <div class="col-md-4 col-lg-3">
+    <div class="bg-white rounded-3 shadow-sm overflow-hidden">
+      <img src="{{ item.after_image.url }}" alt="{{ item.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover">
+      <div class="p-3">
+        <div class="fw-semibold small">{{ item.title }}</div>
+        {% if item.service %}<div class="text-muted small">{{ item.service.name }}</div>{% endif %}
+        {% if item.is_featured %}<span class="badge bg-warning text-dark rounded-pill mt-1" style="font-size:.65rem">Featured</span>{% endif %}
+        <div class="d-flex gap-2 mt-2">
+          <a href="{% url 'admin_gallery_edit' item.pk %}" class="btn btn-sm btn-outline-primary flex-fill">Edit</a>
+          <form method="post" action="{% url 'admin_gallery_delete' item.pk %}" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-5">
+    <i class="bi bi-images fs-1 d-block mb-3 opacity-25"></i>
+    <p>No gallery items yet. <a href="{% url 'admin_gallery_add' %}">Add the first one.</a></p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

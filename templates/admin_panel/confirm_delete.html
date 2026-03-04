@@ -1,0 +1,21 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Confirm Delete – Admin{% endblock %}
+{% block page_title %}Confirm Delete{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div class="bg-white rounded-3 shadow-sm p-4 text-center">
+      <div class="fs-1 mb-3">🗑️</div>
+      <h5 class="fw-bold mb-2">Are you sure?</h5>
+      <p class="text-muted mb-4">This will permanently delete <strong>{{ object }}</strong>.</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger px-4">Yes, Delete</button>
+        </form>
+        <a href="{% url back_url %}" class="btn btn-outline-secondary px-4">Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

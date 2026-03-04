@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}About Us – Windscreen Experts{% endblock %}
+{% block content %}
+<section class="py-5 bg-we-dark text-white" style="min-height:40vh;display:flex;align-items:center">
+  <div class="container py-4">
+    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Our Story</p>
+    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">About Windscreen Experts</h1>
+  </div>
+</section>
+<section class="py-5 bg-we-navy text-white">
+  <div class="container py-4">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Who We Are</p>
+        <h2 style="font-size:2.5rem">Harare's Trusted Auto Glass Specialists</h2>
+        <p class="text-white-50 mt-3">Windscreen Experts was founded with one mission: to deliver fast, reliable, and affordable auto glass services to the people of Harare. We're a mobile-first team — meaning we come to you, wherever you are in the city.</p>
+        <p class="text-white-50">Our technicians are trained professionals with years of experience in windscreen repair, headlight restoration, and precision tint installation. We use only premium-grade materials and industry-leading techniques to ensure every job meets the highest standards.</p>
+        <p class="text-white-50">As a first-time customer, you'll automatically receive 20% off your first service — because we believe in earning your trust from day one.</p>
+        <a href="{% url 'booking_create' %}" class="btn btn-primary-we mt-3 px-4" style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px">Book a Service</a>
+      </div>
+      <div class="col-lg-6">
+        <div class="row g-3">
+          {% for icon, label, value in stats %}
+          <div class="col-6">
+            <div class="p-4 rounded-3 text-center" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--we-bright)">{{ value }}</div>
+              <div class="text-white-50 small text-uppercase" style="letter-spacing:2px">{{ label }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="py-5 bg-we-dark text-white">
+  <div class="container py-4">
+    <h2 class="text-center mb-5" style="font-size:2.5rem">Our Values</h2>
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="p-4">
+          <div class="fs-1 text-we mb-3">⚡</div>
+          <h5 class="fw-bold">Speed</h5>
+          <p class="text-white-50 small">We respect your time. Fast turnaround without cutting corners.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4">
+          <div class="fs-1 text-we mb-3">🏆</div>
+          <h5 class="fw-bold">Quality</h5>
+          <p class="text-white-50 small">Premium materials and certified techniques. Every job done right.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4">
+          <div class="fs-1 text-we mb-3">💙</div>
+          <h5 class="fw-bold">Integrity</h5>
+          <p class="text-white-50 small">Transparent pricing. No surprises. No hidden fees. Ever.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

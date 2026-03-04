@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login – Windscreen Experts</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { background: #060d24; font-family: 'Barlow', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 48px; width: 100%; max-width: 400px; }
+    .form-control { background: rgba(255,255,255,0.07) !important; border: 1px solid rgba(255,255,255,0.12) !important; color: #fff !important; border-radius: 8px !important; }
+    .form-control:focus { border-color: #2f5ff5 !important; box-shadow: 0 0 0 .2rem rgba(47,95,245,.2) !important; }
+    .form-control::placeholder { color: rgba(255,255,255,.3) !important; }
+  </style>
+</head>
+<body>
+  <div class="login-card text-white">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;margin-bottom:8px">Wind<span style="color:#2f5ff5">screen</span> Experts</div>
+    <p class="text-white-50 small mb-4">Admin Panel – Staff Only</p>
+    {% if messages %}{% for m in messages %}<div class="alert alert-danger">{{ m }}</div>{% endfor %}{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="admin" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn w-100 py-3" style="background:#2f5ff5;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;border-radius:8px">Login</button>
+    </form>
+    <div class="text-center mt-3"><a href="/" class="text-white-50 small">← Back to website</a></div>
+  </div>
+</body>
+</html>

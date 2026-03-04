@@ -1,0 +1,56 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Booking #{{ booking.pk }} – Admin{% endblock %}
+{% block page_title %}Booking #{{ booking.pk }}{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+      <h6 class="fw-bold mb-3 text-uppercase small text-muted" style="letter-spacing:2px">Customer</h6>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="text-muted small">Name</div><div class="fw-semibold">{{ booking.full_name }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Email</div><div class="fw-semibold">{{ booking.email }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Phone</div><div class="fw-semibold">{{ booking.phone }}</div></div>
+      </div>
+    </div>
+    <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+      <h6 class="fw-bold mb-3 text-uppercase small text-muted" style="letter-spacing:2px">Service Details</h6>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="text-muted small">Service</div><div class="fw-semibold">{{ booking.service }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Vehicle Type</div><div class="fw-semibold">{{ booking.get_vehicle_type_display }}</div></div>
+        <div class="col-md-4"><div class="text-muted small">Make</div><div class="fw-semibold">{{ booking.vehicle_make|default:'–' }}</div></div>
+        <div class="col-md-4"><div class="text-muted small">Model</div><div class="fw-semibold">{{ booking.vehicle_model|default:'–' }}</div></div>
+        <div class="col-md-4"><div class="text-muted small">Year</div><div class="fw-semibold">{{ booking.vehicle_year|default:'–' }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Date</div><div class="fw-semibold">{{ booking.preferred_date }}</div></div>
+        <div class="col-md-6"><div class="text-muted small">Time</div><div class="fw-semibold">{{ booking.preferred_time }}</div></div>
+        <div class="col-12"><div class="text-muted small">Location</div><div class="fw-semibold">{{ booking.location }}</div></div>
+        {% if booking.notes %}<div class="col-12"><div class="text-muted small">Customer Notes</div><div>{{ booking.notes }}</div></div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="bg-white rounded-3 shadow-sm p-4">
+      <h6 class="fw-bold mb-3 text-uppercase small text-muted" style="letter-spacing:2px">Update Status</h6>
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">{{ field.label }}</label>
+          {{ field }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100">Update Booking</button>
+      </form>
+      <hr>
+      <form method="post" action="{% url 'admin_booking_delete' booking.pk %}" onsubmit="return confirm('Delete this booking?')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger w-100 btn-sm">Delete Booking</button>
+      </form>
+    </div>
+    <div class="bg-white rounded-3 shadow-sm p-4 mt-3">
+      <div class="text-muted small">Submitted</div><div class="fw-semibold">{{ booking.created_at|date:"d M Y, H:i" }}</div>
+      <div class="text-muted small mt-2">Last Updated</div><div class="fw-semibold">{{ booking.updated_at|date:"d M Y, H:i" }}</div>
+    </div>
+    <a href="{% url 'admin_bookings' %}" class="btn btn-outline-secondary w-100 mt-3">← Back to Bookings</a>
+  </div>
+</div>
+{% endblock %}

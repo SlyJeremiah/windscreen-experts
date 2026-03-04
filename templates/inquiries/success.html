@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Inquiry Sent – Windscreen Experts{% endblock %}
+{% block content %}
+<section class="py-5 bg-we-dark text-white text-center" style="min-height:80vh;display:flex;align-items:center">
+  <div class="container">
+    <div class="display-1 mb-4">📬</div>
+    <h1 style="font-size:3.5rem">Inquiry Sent!</h1>
+    <p class="text-white-50 fs-5 mt-3 mb-4">Thanks for reaching out! We'll get back to you as soon as possible.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary-we px-5" style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.1rem">Back to Home</a>
+  </div>
+</section>
+{% endblock %}

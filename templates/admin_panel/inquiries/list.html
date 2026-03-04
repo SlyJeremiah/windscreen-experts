@@ -1,0 +1,26 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Inquiries – Admin{% endblock %}
+{% block page_title %}Inquiries{% endblock %}
+{% block content %}
+<div class="bg-white rounded-3 shadow-sm p-4">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead><tr><th>#</th><th>Name</th><th>Subject</th><th>Date</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for i in inquiries %}
+        <tr {% if i.status == 'new' %}class="table-warning"{% endif %}>
+          <td>{{ i.pk }}</td>
+          <td>{{ i.name }}<br><small class="text-muted">{{ i.email }}</small></td>
+          <td>{{ i.subject }}</td>
+          <td class="small text-muted">{{ i.created_at|date:"d M Y" }}</td>
+          <td><span class="badge bg-{% if i.status == 'new' %}danger{% elif i.status == 'replied' %}success{% else %}secondary{% endif %} rounded-pill">{{ i.get_status_display }}</span></td>
+          <td><a href="{% url 'admin_inquiry_detail' i.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-5">No inquiries yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

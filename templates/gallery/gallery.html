@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Gallery – Windscreen Experts{% endblock %}
+{% block extra_css %}
+<style>
+  .gallery-item { border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); transition: transform .3s; }
+  .gallery-item:hover { transform: translateY(-4px); }
+  .gallery-img { aspect-ratio: 4/3; overflow: hidden; }
+  .gallery-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+  .gallery-item:hover .gallery-img img { transform: scale(1.05); }
+  .before-after .badge { position: absolute; top: 8px; left: 8px; font-size: .65rem; letter-spacing: 1px; }
+</style>
+{% endblock %}
+{% block content %}
+<section class="py-5 bg-we-dark text-white" style="min-height:35vh;display:flex;align-items:center">
+  <div class="container py-4">
+    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Our Work</p>
+    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">Gallery</h1>
+    <p class="text-white-50 fs-5">Before & after transformations from real Harare vehicles.</p>
+  </div>
+</section>
+
+<section class="py-5 bg-we-navy text-white">
+  <div class="container py-4">
+    <!-- Filters -->
+    <div class="d-flex gap-2 flex-wrap mb-5">
+      <a href="{% url 'gallery' %}" class="btn btn-sm {% if not service_filter %}btn-primary-we{% else %}btn-outline-light{% endif %} rounded-pill px-3">All</a>
+      {% for service in services %}
+      <a href="?service={{ service.slug }}" class="btn btn-sm {% if service_filter == service.slug %}btn-primary-we{% else %}btn-outline-light{% endif %} rounded-pill px-3">{{ service.name }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4">
+      {% for item in items %}
+      <div class="col-md-6 col-lg-4">
+        <div class="gallery-item">
+          {% if item.before_image %}
+          <div class="row g-0">
+            <div class="col-6 position-relative">
+              <div class="gallery-img"><img src="{{ item.before_image.url }}" alt="Before – {{ item.title }}"></div>
+              <span class="badge bg-dark position-absolute top-0 start-0 m-2">BEFORE</span>
+            </div>
+            <div class="col-6 position-relative">
+              <div class="gallery-img"><img src="{{ item.after_image.url }}" alt="After – {{ item.title }}"></div>
+              <span class="badge bg-primary position-absolute top-0 start-0 m-2">AFTER</span>
+            </div>
+          </div>
+          {% else %}
+          <div class="gallery-img"><img src="{{ item.after_image.url }}" alt="{{ item.title }}"></div>
+          {% endif %}
+          <div class="p-3">
+            <h6 class="fw-bold mb-1">{{ item.title }}</h6>
+            <div class="d-flex align-items-center gap-2">
+              {% if item.service %}<span class="badge rounded-pill px-2" style="background:rgba(47,95,245,0.2);color:var(--we-bright);font-size:.7rem">{{ item.service.name }}</span>{% endif %}
+              {% if item.vehicle_type %}<span class="text-white-50 small">{{ item.vehicle_type }}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-white-50 py-5">
+        <i class="bi bi-images fs-1 mb-3 d-block opacity-25"></i>
+        <p>Gallery photos coming soon. Check back after our first jobs!</p>
+        <a href="{% url 'booking_create' %}" class="btn btn-primary-we mt-2 px-4">Be Our First Customer</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

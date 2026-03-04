@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Services & Pricing – Windscreen Experts{% endblock %}
+{% block content %}
+<section class="py-5 bg-we-dark text-white" style="min-height:35vh;display:flex;align-items:center">
+  <div class="container py-4">
+    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">What We Offer</p>
+    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">Services & Pricing</h1>
+    <p class="text-white-50 fs-5">Transparent pricing. No surprises. First-time customers get <span class="text-we fw-bold">20% off</span>.</p>
+  </div>
+</section>
+
+<section class="py-5 bg-we-navy text-white">
+  <div class="container py-4">
+    <div class="row g-4">
+      {% for service in services %}
+      <div class="col-lg-6">
+        <div class="p-4 h-100 rounded-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div style="width:52px;height:52px;background:rgba(47,95,245,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">
+              <i class="bi {{ service.icon|default:'bi-tools' }} text-we"></i>
+            </div>
+            <h4 class="mb-0" style="font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px">{{ service.name }}</h4>
+          </div>
+          <p class="text-white-50">{{ service.description }}</p>
+          {% if service.pricing.all %}
+          <h6 class="text-white fw-bold mt-4 mb-3 text-uppercase small" style="letter-spacing:2px">Pricing</h6>
+          <div class="row g-2">
+            {% for price in service.pricing.all %}
+            <div class="col-6 col-md-4">
+              <div class="text-center p-3 rounded-3" style="background:rgba(47,95,245,0.1);border:1px solid rgba(47,95,245,0.2)">
+                <div class="text-white-50 small text-uppercase" style="letter-spacing:1px">{{ price.label|default:price.get_vehicle_type_display }}</div>
+                <div class="text-we fw-bold fs-5">${{ price.price }}{% if price.is_starting_price %}<small class="text-white-50 fs-6">+</small>{% endif %}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <a href="{% url 'booking_create' %}" class="btn btn-primary-we mt-4 px-4">Book This Service</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-white-50 py-5">
+        <i class="bi bi-tools fs-1 mb-3 d-block opacity-25"></i>
+        <p>Services coming soon.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Shade levels -->
+<section class="py-5 bg-we-dark text-white">
+  <div class="container py-4">
+    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Tinting</p>
+    <h2 class="mb-4" style="font-size:2.5rem">Available Shade Levels</h2>
+    <div class="d-flex rounded-3 overflow-hidden">
+      <div class="flex-fill text-center py-4 fw-bold" style="background:rgba(255,255,255,0.85);color:#111">5%</div>
+      <div class="flex-fill text-center py-4 fw-bold" style="background:rgba(180,180,180,0.6);color:#111">20%</div>
+      <div class="flex-fill text-center py-4 fw-bold text-white" style="background:rgba(100,100,100,0.7)">40%</div>
+      <div class="flex-fill text-center py-4 fw-bold text-white" style="background:rgba(50,50,50,0.8)">60%</div>
+      <div class="flex-fill text-center py-4 fw-bold text-white" style="background:rgba(15,15,15,0.95)">80%</div>
+    </div>
+  </div>
+</section>
+{% endblock %}

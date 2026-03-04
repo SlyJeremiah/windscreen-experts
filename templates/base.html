@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Windscreen Experts – Harare's #1 Auto Glass Specialists{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Fast, reliable windscreen repair, tinting & headlight restoration in Harare, Zimbabwe.{% endblock %}">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Google Analytics -->
+  {% if ga_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ ga_id }}');
+  </script>
+  {% endif %}
+
+  <style>
+    :root {
+      --we-navy:  #0a1a4a;
+      --we-blue:  #1a3cc8;
+      --we-bright:#2f5ff5;
+      --we-dark:  #060d24;
+      --we-light: #e8eeff;
+    }
+    body { font-family: 'Barlow', sans-serif; }
+    h1,h2,h3,.display-font { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
+
+    /* Navbar */
+    .navbar { background: var(--we-dark) !important; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .navbar-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 2px; color: #fff !important; }
+    .navbar-brand span { color: var(--we-bright); }
+    .nav-link { color: rgba(255,255,255,0.75) !important; font-weight: 600; font-size: .85rem; letter-spacing: 1px; text-transform: uppercase; }
+    .nav-link:hover, .nav-link.active { color: #fff !important; }
+    .btn-book { background: var(--we-bright) !important; color: #fff !important; border-radius: 6px; padding: 8px 20px !important; }
+    .btn-book:hover { background: var(--we-blue) !important; }
+
+    /* Footer */
+    footer { background: var(--we-dark); color: rgba(255,255,255,0.55); border-top: 1px solid rgba(255,255,255,0.06); }
+    footer a { color: rgba(255,255,255,0.55); text-decoration: none; }
+    footer a:hover { color: #fff; }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: #fff; }
+    .footer-logo span { color: var(--we-bright); }
+
+    /* Utilities */
+    .btn-primary-we { background: var(--we-bright); color: #fff; border: none; }
+    .btn-primary-we:hover { background: var(--we-blue); color: #fff; }
+    .text-we { color: var(--we-bright) !important; }
+    .bg-we-dark { background: var(--we-dark); }
+    .bg-we-navy { background: var(--we-navy); }
+
+    /* Alerts */
+    .messages-container { position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">Wind<span>screen</span> Experts</a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <i class="bi bi-list text-white fs-4"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">Services</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'inquiry_create' %}active{% endif %}" href="{% url 'inquiry_create' %}">Inquiries</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="nav-link btn-book" href="{% url 'booking_create' %}">Book Now</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- FLASH MESSAGES -->
+{% if messages %}
+<div class="messages-container">
+  {% for message in messages %}
+  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- PAGE CONTENT -->
+{% block content %}{% endblock %}
+
+<!-- FOOTER -->
+<footer class="py-5 mt-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="footer-logo mb-3">Wind<span>screen</span> Experts</div>
+        <p class="small">Harare's premier windscreen repair, tinting & headlight restoration service. Fast. Reliable. Mobile.</p>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6 class="text-white fw-bold mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:2px">Navigation</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'services' %}">Services</a></li>
+          <li><a href="{% url 'gallery' %}">Gallery</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 col-6">
+        <h6 class="text-white fw-bold mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:2px">Services</h6>
+        <ul class="list-unstyled small">
+          <li>Windscreen Repair</li>
+          <li>Headlight Restoration</li>
+          <li>Ceramic Tint</li>
+          <li>Smart Tint Installation</li>
+        </ul>
+      </div>
+      <div class="col-lg-3">
+        <h6 class="text-white fw-bold mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:2px">Contact</h6>
+        <ul class="list-unstyled small">
+          <li><i class="bi bi-telephone me-2 text-we"></i>+263 77 786 7884</li>
+          <li><i class="bi bi-whatsapp me-2 text-we"></i>+263 71 988 8441</li>
+          <li><i class="bi bi-envelope me-2 text-we"></i>munashe@windowscreens.co.zw</li>
+          <li><i class="bi bi-geo-alt me-2 text-we"></i>Mount Pleasant Shops, Harare</li>
+          <li><i class="bi bi-clock me-2 text-we"></i>Always Open</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-secondary my-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center small">
+      <p class="mb-0">© {% now "Y" %} Windscreen Experts · Harare, Zimbabwe</p>
+      <p class="mb-0"><a href="{% url 'admin_dashboard' %}">Admin</a> · <a href="{{ 'windowsexp.co.zw' }}">windowsexp.co.zw</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

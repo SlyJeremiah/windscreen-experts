@@ -1,0 +1,88 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Dashboard – Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="text-muted small text-uppercase mb-1" style="letter-spacing:1.5px;font-size:.7rem">Total Bookings</div>
+      <div class="stat-num">{{ total_bookings }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card border-warning">
+      <div class="text-muted small text-uppercase mb-1" style="letter-spacing:1.5px;font-size:.7rem">Pending</div>
+      <div class="stat-num text-warning">{{ pending_bookings }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card border-success">
+      <div class="text-muted small text-uppercase mb-1" style="letter-spacing:1.5px;font-size:.7rem">Completed</div>
+      <div class="stat-num text-success">{{ completed_bookings }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card border-danger">
+      <div class="text-muted small text-uppercase mb-1" style="letter-spacing:1.5px;font-size:.7rem">New Inquiries</div>
+      <div class="stat-num text-danger">{{ new_inquiries }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Recent Bookings -->
+  <div class="col-lg-8">
+    <div class="bg-white rounded-3 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">Recent Bookings</h6>
+        <a href="{% url 'admin_bookings' %}" class="btn btn-sm btn-outline-primary">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead><tr>
+            <th>#</th><th>Customer</th><th>Service</th><th>Date</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+            {% for b in recent_bookings %}
+            <tr>
+              <td><a href="{% url 'admin_booking_detail' b.pk %}" class="text-decoration-none fw-bold">#{{ b.pk }}</a></td>
+              <td>{{ b.full_name }}<br><small class="text-muted">{{ b.phone }}</small></td>
+              <td>{{ b.service }}</td>
+              <td class="small">{{ b.preferred_date }}</td>
+              <td><span class="badge badge-{{ b.status }} rounded-pill px-2">{{ b.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No bookings yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Inquiries -->
+  <div class="col-lg-4">
+    <div class="bg-white rounded-3 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">Recent Inquiries</h6>
+        <a href="{% url 'admin_inquiries' %}" class="btn btn-sm btn-outline-primary">View All</a>
+      </div>
+      {% for i in recent_inquiries %}
+      <div class="d-flex gap-3 align-items-start mb-3 pb-3 border-bottom">
+        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width:36px;height:36px;font-size:.85rem;font-weight:700">
+          {{ i.name|first|upper }}
+        </div>
+        <div>
+          <div class="fw-semibold small">{{ i.name }}</div>
+          <div class="text-muted small text-truncate" style="max-width:180px">{{ i.subject }}</div>
+          {% if i.status == 'new' %}<span class="badge bg-danger rounded-pill" style="font-size:.65rem">New</span>{% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted small text-center py-3">No inquiries yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

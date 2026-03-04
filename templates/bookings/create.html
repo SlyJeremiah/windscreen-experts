@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Book a Service – Windscreen Experts{% endblock %}
+{% block content %}
+<section class="py-5 bg-we-dark text-white" style="min-height:30vh;display:flex;align-items:center">
+  <div class="container py-4">
+    <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Get Started</p>
+    <h1 style="font-size:clamp(2.5rem,7vw,5rem)">Book Your Service</h1>
+    <p class="text-white-50 fs-5">First-time customers receive <span class="text-we fw-bold">20% off</span>. We'll confirm within hours.</p>
+  </div>
+</section>
+<section class="py-5 bg-we-navy text-white">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="p-4 p-md-5 rounded-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1)">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <h5 class="fw-bold mb-4 text-uppercase" style="letter-spacing:2px;font-size:.85rem;color:var(--we-bright)">Your Details</h5>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">First Name *</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Last Name *</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Email *</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Phone *</label>
+                {{ form.phone }}
+              </div>
+            </div>
+
+            <h5 class="fw-bold mb-4 mt-2 text-uppercase" style="letter-spacing:2px;font-size:.85rem;color:var(--we-bright)">Service Details</h5>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Service *</label>
+                {{ form.service }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Vehicle Type *</label>
+                {{ form.vehicle_type }}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Make</label>
+                {{ form.vehicle_make }}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Model</label>
+                {{ form.vehicle_model }}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Year</label>
+                {{ form.vehicle_year }}
+              </div>
+            </div>
+
+            <h5 class="fw-bold mb-4 mt-2 text-uppercase" style="letter-spacing:2px;font-size:.85rem;color:var(--we-bright)">Schedule</h5>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Preferred Date *</label>
+                {{ form.preferred_date }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Preferred Time *</label>
+                {{ form.preferred_time }}
+              </div>
+              <div class="col-12">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Your Location (for mobile service) *</label>
+                {{ form.location }}
+              </div>
+              <div class="col-12">
+                <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Notes</label>
+                {{ form.notes }}
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary-we w-100 py-3 mt-2" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px">
+              Submit Booking Request
+            </button>
+            <p class="text-white-50 small text-center mt-3">We'll contact you to confirm your booking. No payment required.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-control, .form-select {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--we-bright) !important;
+    box-shadow: 0 0 0 0.2rem rgba(47,95,245,0.2) !important;
+  }
+  .form-control::placeholder { color: rgba(255,255,255,0.3) !important; }
+  .form-select option { background: #0a1a4a; }
+</style>
+{% endblock %}
