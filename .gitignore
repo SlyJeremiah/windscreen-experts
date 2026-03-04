@@ -6,3 +6,6 @@ __pycache__/
 media/
 windscreen_experts_django.zip
 windscreen-experts/
+
+.vercel
+.env*.local
