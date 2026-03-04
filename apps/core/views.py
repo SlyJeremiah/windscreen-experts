@@ -20,7 +20,7 @@ CONTACT_ITEMS = [
     ('bi-globe', 'Website', 'windowsexp.co.zw', 'https://windowsexp.co.zw'),
 ]
 
-ABOUT_STATS = [
+stats = [
     ('bi-car-front', 'Cars Serviced', '500+'),
     ('bi-clock', 'Always Available', '24/7'),
     ('bi-percent', 'First Visit Off', '20%'),
