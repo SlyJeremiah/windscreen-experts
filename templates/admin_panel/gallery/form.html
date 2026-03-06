@@ -6,6 +6,19 @@
   <a href="{% url 'admin_gallery' %}" class="btn btn-outline-light btn-sm">← Back</a>
 </div>
 
+{% if form.errors %}
+<div class="alert alert-danger mb-4">
+  <strong>Please fix the following errors:</strong>
+  <ul class="mb-0 mt-2">
+    {% for field, errors in form.errors.items %}
+      {% for error in errors %}
+        <li>{{ field }}: {{ error }}</li>
+      {% endfor %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 <div class="card-panel p-4" style="max-width:700px">
   <form method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
@@ -21,6 +34,7 @@
       <div class="col-md-8">
         <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Title *</label>
         {{ form.title }}
+        {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors }}</div>{% endif %}
       </div>
       <div class="col-md-4">
         <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Order</label>
@@ -45,18 +59,15 @@
         <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Before Image (optional)</p>
         {{ form.before_image }}
         {% if form.instance.before_image %}
-        <div class="mt-2">
-          <img src="{{ form.instance.before_image.url }}" style="height:80px;border-radius:6px;object-fit:cover">
-        </div>
+        <div class="mt-2"><img src="{{ form.instance.before_image.url }}" style="height:80px;border-radius:6px;object-fit:cover"></div>
         {% endif %}
       </div>
       <div class="mb-4 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
-        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">After Image</p>
+        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">After Image *</p>
         {{ form.after_image }}
+        {% if form.after_image.errors %}<div class="text-danger small mt-1">{{ form.after_image.errors }}</div>{% endif %}
         {% if form.instance.after_image %}
-        <div class="mt-2">
-          <img src="{{ form.instance.after_image.url }}" style="height:80px;border-radius:6px;object-fit:cover">
-        </div>
+        <div class="mt-2"><img src="{{ form.instance.after_image.url }}" style="height:80px;border-radius:6px;object-fit:cover"></div>
         {% endif %}
       </div>
     </div>
@@ -64,21 +75,18 @@
     <!-- VIDEO FIELDS -->
     <div id="video-fields" style="display:none">
       <div class="mb-3 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
-        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video File (mp4, webm)</p>
+        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video File * (mp4, webm)</p>
         {{ form.video }}
+        {% if form.video.errors %}<div class="text-danger small mt-1">{{ form.video.errors }}</div>{% endif %}
         {% if form.instance.video %}
-        <div class="mt-2">
-          <video src="{{ form.instance.video.url }}" style="height:80px;border-radius:6px" controls></video>
-        </div>
+        <div class="mt-2"><video src="{{ form.instance.video.url }}" style="height:80px;border-radius:6px" controls></video></div>
         {% endif %}
       </div>
       <div class="mb-4 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
         <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video Thumbnail (optional)</p>
         {{ form.video_thumbnail }}
         {% if form.instance.video_thumbnail %}
-        <div class="mt-2">
-          <img src="{{ form.instance.video_thumbnail.url }}" style="height:80px;border-radius:6px;object-fit:cover">
-        </div>
+        <div class="mt-2"><img src="{{ form.instance.video_thumbnail.url }}" style="height:80px;border-radius:6px;object-fit:cover"></div>
         {% endif %}
       </div>
     </div>
@@ -116,6 +124,6 @@
   }
 
   mediaTypeSelect.addEventListener('change', toggleFields);
-  toggleFields(); // run on page load
+  toggleFields();
 </script>
 {% endblock %}
