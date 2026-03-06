@@ -1,26 +1,121 @@
 {% extends 'admin_panel/base.html' %}
-{% block title %}{{ title }} – Admin{% endblock %}
-{% block page_title %}{{ title }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-7">
-    <div class="bg-white rounded-3 shadow-sm p-4">
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="mb-3">
-          <label class="form-label fw-semibold small">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
-          {{ field }}
-          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-          {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors.0 }}</div>{% endif %}
-        </div>
-        {% endfor %}
-        <div class="d-flex gap-2 mt-4">
-          <button type="submit" class="btn btn-primary px-4">Save</button>
-          <a href="{% url 'admin_gallery' %}" class="btn btn-outline-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">{{ title }}</h4>
+  <a href="{% url 'admin_gallery' %}" class="btn btn-outline-light btn-sm">← Back</a>
 </div>
+
+<div class="card-panel p-4" style="max-width:700px">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <!-- Media Type -->
+    <div class="mb-4">
+      <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Media Type *</label>
+      {{ form.media_type }}
+    </div>
+
+    <!-- Basic Info -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-8">
+        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Title *</label>
+        {{ form.title }}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Order</label>
+        {{ form.order }}
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Service</label>
+        {{ form.service }}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Vehicle Type</label>
+        {{ form.vehicle_type }}
+      </div>
+    </div>
+
+    <!-- IMAGE FIELDS -->
+    <div id="image-fields">
+      <div class="mb-3 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
+        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Before Image (optional)</p>
+        {{ form.before_image }}
+        {% if form.instance.before_image %}
+        <div class="mt-2">
+          <img src="{{ form.instance.before_image.url }}" style="height:80px;border-radius:6px;object-fit:cover">
+        </div>
+        {% endif %}
+      </div>
+      <div class="mb-4 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
+        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">After Image</p>
+        {{ form.after_image }}
+        {% if form.instance.after_image %}
+        <div class="mt-2">
+          <img src="{{ form.instance.after_image.url }}" style="height:80px;border-radius:6px;object-fit:cover">
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- VIDEO FIELDS -->
+    <div id="video-fields" style="display:none">
+      <div class="mb-3 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
+        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video File (mp4, webm)</p>
+        {{ form.video }}
+        {% if form.instance.video %}
+        <div class="mt-2">
+          <video src="{{ form.instance.video.url }}" style="height:80px;border-radius:6px" controls></video>
+        </div>
+        {% endif %}
+      </div>
+      <div class="mb-4 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
+        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video Thumbnail (optional)</p>
+        {{ form.video_thumbnail }}
+        {% if form.instance.video_thumbnail %}
+        <div class="mt-2">
+          <img src="{{ form.instance.video_thumbnail.url }}" style="height:80px;border-radius:6px;object-fit:cover">
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Description</label>
+      {{ form.description }}
+    </div>
+
+    <div class="form-check form-switch mb-4">
+      {{ form.is_featured }}
+      <label class="form-check-label text-white-50 ms-2">Featured on homepage</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary-we px-5"
+            style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.1rem">
+      Save
+    </button>
+  </form>
+</div>
+
+<script>
+  const mediaTypeSelect = document.getElementById('id_media_type');
+  const imageFields = document.getElementById('image-fields');
+  const videoFields = document.getElementById('video-fields');
+
+  function toggleFields() {
+    if (mediaTypeSelect.value === 'video') {
+      imageFields.style.display = 'none';
+      videoFields.style.display = 'block';
+    } else {
+      imageFields.style.display = 'block';
+      videoFields.style.display = 'none';
+    }
+  }
+
+  mediaTypeSelect.addEventListener('change', toggleFields);
+  toggleFields(); // run on page load
+</script>
 {% endblock %}
