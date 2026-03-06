@@ -5,9 +5,7 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '.vercel.app']
 
 INSTALLED_APPS = [
@@ -79,30 +77,40 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media – Backblaze B2
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media / File Storage
+SUPABASE_PROJECT_ID = 'dclubpjyohcduympiskl'
+
 if os.environ.get('USE_SUPABASE_STORAGE') == 'True':
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_STORAGE_KEY')
+    DEFAULT_FILE_STORAGE  = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID     = os.environ.get('SUPABASE_STORAGE_KEY')
     AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_STORAGE_SECRET')
     AWS_STORAGE_BUCKET_NAME = 'media'
-    AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_STORAGE_URL')
-    AWS_DEFAULT_ACL = 'public-read'
-    AWS_QUERYSTRING_AUTH = False
-    AWS_S3_CUSTOM_DOMAIN = os.environ.get('SUPABASE_STORAGE_DOMAIN')
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/storage/v1/object/public/media/'
+    AWS_S3_ENDPOINT_URL   = f'https://{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/s3'
+    AWS_S3_REGION_NAME    = 'us-east-1'
+    AWS_DEFAULT_ACL       = 'public-read'
+    AWS_QUERYSTRING_AUTH  = False
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_VERIFY         = True
+    MEDIA_URL = f'https://{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/media/'
+else:
+    MEDIA_URL  = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
-# Email – Gmail SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'munashe@windowscreens.co.zw')
+# Email - Gmail SMTP
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = 'smtp.gmail.com'
+EMAIL_PORT          = 587
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', 'munashe@windowscreens.co.zw')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'munashe@windowscreens.co.zw')
+DEFAULT_FROM_EMAIL  = EMAIL_HOST_USER
+ADMIN_EMAIL         = os.environ.get('ADMIN_EMAIL', 'munashe@windowscreens.co.zw')
 
 # Google Analytics
 GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', '')
 
-LOGIN_URL = '/admin-panel/login/'
+# Auth
+LOGIN_URL          = '/admin-panel/login/'
 LOGIN_REDIRECT_URL = '/admin-panel/'
