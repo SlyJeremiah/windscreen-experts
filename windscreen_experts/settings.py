@@ -93,6 +93,8 @@ if os.environ.get('USE_SUPABASE_STORAGE') == 'True':
     AWS_QUERYSTRING_AUTH  = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_VERIFY         = True
+    # This forces Django to build image URLs using the public path
+    AWS_S3_CUSTOM_DOMAIN  = f'{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/media'
     MEDIA_URL = f'https://{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/media/'
 else:
     MEDIA_URL  = '/media/'
