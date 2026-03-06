@@ -80,16 +80,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media – Backblaze B2
-if os.environ.get('USE_BACKBLAZE') == 'True':
+if os.environ.get('USE_SUPABASE_STORAGE') == 'True':
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID = os.environ.get('B2_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('B2_APPLICATION_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('B2_BUCKET_NAME')
-    AWS_S3_ENDPOINT_URL = os.environ.get('B2_ENDPOINT_URL')
-    AWS_S3_CUSTOM_DOMAIN = f'{os.environ.get("B2_BUCKET_NAME")}.{os.environ.get("B2_ENDPOINT_URL").replace("https://", "")}'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_STORAGE_KEY')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_STORAGE_SECRET')
+    AWS_STORAGE_BUCKET_NAME = 'media'
+    AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_STORAGE_URL')
     AWS_DEFAULT_ACL = 'public-read'
     AWS_QUERYSTRING_AUTH = False
+    AWS_S3_CUSTOM_DOMAIN = os.environ.get('SUPABASE_STORAGE_DOMAIN')
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/storage/v1/object/public/media/'
 
 # Email – Gmail SMTP
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
