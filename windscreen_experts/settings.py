@@ -80,20 +80,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media – Backblaze B2
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-USE_BACKBLAZE = os.environ.get('USE_BACKBLAZE', 'False') == 'True'
-if USE_BACKBLAZE:
+if os.environ.get('USE_BACKBLAZE') == 'True':
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     AWS_ACCESS_KEY_ID = os.environ.get('B2_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('B2_APPLICATION_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('B2_BUCKET_NAME')
     AWS_S3_ENDPOINT_URL = os.environ.get('B2_ENDPOINT_URL')
-    AWS_S3_FILE_OVERWRITE = False
-    MEDIA_URL = f"{os.environ.get('B2_ENDPOINT_URL')}/{os.environ.get('B2_BUCKET_NAME')}/"
-else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    AWS_S3_CUSTOM_DOMAIN = f'{os.environ.get("B2_BUCKET_NAME")}.{os.environ.get("B2_ENDPOINT_URL").replace("https://", "")}'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_QUERYSTRING_AUTH = False
 
 # Email – Gmail SMTP
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
