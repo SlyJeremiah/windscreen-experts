@@ -4,17 +4,45 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
   <span class="text-muted small">{{ items.count }} item{{ items.count|pluralize }}</span>
-  <a href="{% url 'admin_gallery_add' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Photo</a>
+  <a href="{% url 'admin_gallery_add' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Item</a>
 </div>
 <div class="row g-3">
   {% for item in items %}
   <div class="col-md-4 col-lg-3">
     <div class="bg-white rounded-3 shadow-sm overflow-hidden">
-      <img src="{{ item.after_image.url }}" alt="{{ item.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover">
+
+      {% if item.is_video %}
+        {% if item.video_thumbnail %}
+          <div style="position:relative">
+            <img src="{{ item.video_thumbnail.url }}" alt="{{ item.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)">
+              <i class="bi bi-play-circle-fill text-white" style="font-size:2.5rem"></i>
+            </div>
+          </div>
+        {% else %}
+          <div style="width:100%;aspect-ratio:4/3;background:#1a1a2e;display:flex;align-items:center;justify-content:center">
+            <i class="bi bi-camera-video text-white" style="font-size:2.5rem;opacity:0.5"></i>
+          </div>
+        {% endif %}
+      {% else %}
+        {% if item.after_image %}
+          <img src="{{ item.after_image.url }}" alt="{{ item.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover">
+        {% elif item.before_image %}
+          <img src="{{ item.before_image.url }}" alt="{{ item.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover">
+        {% else %}
+          <div style="width:100%;aspect-ratio:4/3;background:#f0f0f0;display:flex;align-items:center;justify-content:center">
+            <i class="bi bi-image text-muted" style="font-size:2.5rem;opacity:0.3"></i>
+          </div>
+        {% endif %}
+      {% endif %}
+
       <div class="p-3">
         <div class="fw-semibold small">{{ item.title }}</div>
-        {% if item.service %}<div class="text-muted small">{{ item.service.name }}</div>{% endif %}
-        {% if item.is_featured %}<span class="badge bg-warning text-dark rounded-pill mt-1" style="font-size:.65rem">Featured</span>{% endif %}
+        <div class="d-flex gap-1 mt-1 flex-wrap">
+          {% if item.is_video %}<span class="badge bg-primary rounded-pill" style="font-size:.6rem"><i class="bi bi-camera-video me-1"></i>Video</span>{% endif %}
+          {% if item.service %}<span class="badge bg-light text-dark rounded-pill" style="font-size:.6rem">{{ item.service.name }}</span>{% endif %}
+          {% if item.is_featured %}<span class="badge bg-warning text-dark rounded-pill" style="font-size:.6rem">Featured</span>{% endif %}
+        </div>
         <div class="d-flex gap-2 mt-2">
           <a href="{% url 'admin_gallery_edit' item.pk %}" class="btn btn-sm btn-outline-primary flex-fill">Edit</a>
           <form method="post" action="{% url 'admin_gallery_delete' item.pk %}" onsubmit="return confirm('Delete?')">
