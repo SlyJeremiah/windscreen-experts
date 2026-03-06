@@ -37,21 +37,53 @@
   .gallery-img { aspect-ratio: 4/3; overflow: hidden; }
   .gallery-img img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
   .gallery-item:hover .gallery-img img { transform: scale(1.07); }
+
+  /* Video item */
+  .gallery-video { aspect-ratio: 4/3; overflow: hidden; position: relative; }
+  .gallery-video video { width:100%; height:100%; object-fit:cover; }
+  .video-play-btn {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.35);
+    transition: background .2s;
+    cursor: pointer;
+  }
+  .video-play-btn:hover { background: rgba(47,95,245,0.45); }
+  .video-play-btn i { font-size: 3rem; color: #fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+  .video-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(47,95,245,0.85);
+    color: #fff; font-size: .65rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 50px;
+  }
+
   .filter-btn {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.15);
     color: rgba(255,255,255,0.6);
-    padding: 8px 20px;
-    border-radius: 50px;
+    padding: 8px 20px; border-radius: 50px;
     font-size: .8rem; font-weight: 600; letter-spacing: 1px;
-    cursor: pointer; transition: all .2s;
-    text-decoration: none;
+    cursor: pointer; transition: all .2s; text-decoration: none;
   }
   .filter-btn:hover, .filter-btn.active {
-    background: var(--we-bright);
-    border-color: var(--we-bright);
-    color: #fff;
+    background: var(--we-bright); border-color: var(--we-bright); color: #fff;
   }
+
+  /* Lightbox */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
+  .lightbox-inner video,
+  .lightbox-inner img { max-width: 90vw; max-height: 85vh; border-radius: 12px; }
+  .lightbox-close {
+    position: absolute; top: -40px; right: 0;
+    color: #fff; font-size: 1.8rem; cursor: pointer; opacity: .7;
+  }
+  .lightbox-close:hover { opacity: 1; }
 </style>
 {% endblock %}
 {% block content %}
@@ -63,7 +95,7 @@
   <div class="container position-relative py-5" style="z-index:2">
     <p class="text-we fw-bold text-uppercase mb-2" style="letter-spacing:3px;font-size:.75rem">Our Work</p>
     <h1 class="text-white" style="font-size:clamp(2.5rem,7vw,5rem)">Gallery</h1>
-    <p class="text-white-50 fs-5 mt-2">Before & after transformations from real Harare vehicles.</p>
+    <p class="text-white-50 fs-5 mt-2">Photos & videos from real Harare vehicles.</p>
   </div>
 </section>
 
@@ -75,6 +107,12 @@
     <!-- Filters -->
     <div class="d-flex gap-2 flex-wrap mb-5">
       <a href="{% url 'gallery' %}" class="filter-btn {% if not service_filter %}active{% endif %}">All</a>
+      <a href="?type=image" class="filter-btn {% if request.GET.type == 'image' %}active{% endif %}">
+        <i class="bi bi-image me-1"></i>Photos
+      </a>
+      <a href="?type=video" class="filter-btn {% if request.GET.type == 'video' %}active{% endif %}">
+        <i class="bi bi-play-circle me-1"></i>Videos
+      </a>
       {% for service in services %}
       <a href="?service={{ service.slug }}" class="filter-btn {% if service_filter == service.slug %}active{% endif %}">{{ service.name }}</a>
       {% endfor %}
@@ -84,20 +122,39 @@
       {% for item in items %}
       <div class="col-md-6 col-lg-4">
         <div class="gallery-item">
+
+          {% if item.is_video %}
+          <!-- VIDEO ITEM -->
+          <div class="gallery-video" onclick="openLightbox('{{ item.video.url }}', 'video')">
+            {% if item.video_thumbnail %}
+            <img src="{{ item.video_thumbnail.url }}" style="width:100%;height:100%;object-fit:cover">
+            {% endif %}
+            <div class="video-play-btn">
+              <i class="bi bi-play-circle-fill"></i>
+            </div>
+            <span class="video-badge"><i class="bi bi-camera-video me-1"></i>Video</span>
+          </div>
+
+          {% else %}
+          <!-- IMAGE ITEM -->
           {% if item.before_image %}
           <div class="row g-0">
             <div class="col-6 position-relative">
               <div class="gallery-img"><img src="{{ item.before_image.url }}" alt="Before"></div>
               <span class="position-absolute top-0 start-0 m-2 badge" style="background:rgba(0,0,0,0.7);font-size:.65rem;letter-spacing:1px">BEFORE</span>
             </div>
-            <div class="col-6 position-relative">
+            <div class="col-6 position-relative" onclick="openLightbox('{{ item.after_image.url }}', 'image')">
               <div class="gallery-img"><img src="{{ item.after_image.url }}" alt="After"></div>
               <span class="position-absolute top-0 start-0 m-2 badge bg-primary" style="font-size:.65rem;letter-spacing:1px">AFTER</span>
             </div>
           </div>
-          {% else %}
-          <div class="gallery-img"><img src="{{ item.after_image.url }}" alt="{{ item.title }}"></div>
+          {% elif item.after_image %}
+          <div class="gallery-img" onclick="openLightbox('{{ item.after_image.url }}', 'image')" style="cursor:pointer">
+            <img src="{{ item.after_image.url }}" alt="{{ item.title }}">
+          </div>
           {% endif %}
+          {% endif %}
+
           <div class="p-3">
             <h6 class="fw-bold mb-1 text-white">{{ item.title }}</h6>
             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -110,12 +167,41 @@
       {% empty %}
       <div class="col-12 text-center text-white-50 py-5">
         <i class="bi bi-images fs-1 d-block mb-3 opacity-25"></i>
-        <p class="mb-3">Gallery photos coming soon!</p>
-        <a href="{% url 'booking_create' %}" class="btn btn-primary-we px-4">Be Among Our First Customers</a>
+        <p class="mb-3">Gallery coming soon!</p>
+        <a href="{% url 'booking_create' %}" class="btn btn-primary-we px-4">Book a Service</a>
       </div>
       {% endfor %}
     </div>
   </div>
 </section>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <span class="lightbox-close" onclick="closeLightbox()"><i class="bi bi-x-lg"></i></span>
+    <div id="lightbox-content"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openLightbox(src, type) {
+  const content = document.getElementById('lightbox-content');
+  if (type === 'video') {
+    content.innerHTML = `<video src="${src}" controls autoplay style="max-width:90vw;max-height:85vh;border-radius:12px"></video>`;
+  } else {
+    content.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:85vh;border-radius:12px">`;
+  }
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.getElementById('lightbox-content').innerHTML = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
 {% endblock %}
