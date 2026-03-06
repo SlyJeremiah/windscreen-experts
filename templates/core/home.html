@@ -284,7 +284,7 @@
       {% for item in featured %}
       <div class="col-md-4">
         <div class="gallery-thumb">
-          <img src="{{ item.after_image.url }}" alt="{{ item.title }}">
+          {% if item.after_image %}<img src="{{ item.after_image.url }}" alt="{{ item.title }}">{% elif item.video_thumbnail %}<img src="{{ item.video_thumbnail.url }}" alt="{{ item.title }}">{% else %}<div style="width:100%;aspect-ratio:4/3;background:#1a1a2e;display:flex;align-items:center;justify-content:center"><i class="bi bi-play-circle text-white" style="font-size:2rem;opacity:0.5"></i></div>{% endif %}
         </div>
         <p class="text-white-50 small mt-2 mb-0">{{ item.title }}</p>
       </div>
