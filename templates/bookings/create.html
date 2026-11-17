@@ -69,6 +69,9 @@
         <div class="p-4 p-md-5 rounded-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1)">
           <form method="post" novalidate>
             {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger small">Please fix the highlighted fields below.</div>
+            {% endif %}
 
             <div class="step-label">① Your Details</div>
             <div class="row g-3 mb-4">
@@ -80,14 +83,17 @@
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Last Name *</label>
                 {{ form.last_name }}
+                {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Email *</label>
                 {{ form.email }}
+                {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Phone *</label>
                 {{ form.phone }}
+                {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}
               </div>
             </div>
 
@@ -96,22 +102,27 @@
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Service *</label>
                 {{ form.service }}
+                {% if form.service.errors %}<div class="text-danger small mt-1">{{ form.service.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Vehicle Type *</label>
                 {{ form.vehicle_type }}
+                {% if form.vehicle_type.errors %}<div class="text-danger small mt-1">{{ form.vehicle_type.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-4">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Make</label>
                 {{ form.vehicle_make }}
+                {% if form.vehicle_make.errors %}<div class="text-danger small mt-1">{{ form.vehicle_make.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-4">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Model</label>
                 {{ form.vehicle_model }}
+                {% if form.vehicle_model.errors %}<div class="text-danger small mt-1">{{ form.vehicle_model.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-4">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Year</label>
                 {{ form.vehicle_year }}
+                {% if form.vehicle_year.errors %}<div class="text-danger small mt-1">{{ form.vehicle_year.errors.0 }}</div>{% endif %}
               </div>
             </div>
 
@@ -120,18 +131,22 @@
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Preferred Date *</label>
                 {{ form.preferred_date }}
+                {% if form.preferred_date.errors %}<div class="text-danger small mt-1">{{ form.preferred_date.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Preferred Time *</label>
                 {{ form.preferred_time }}
+                {% if form.preferred_time.errors %}<div class="text-danger small mt-1">{{ form.preferred_time.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-12">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Your Location *</label>
                 {{ form.location }}
+                {% if form.location.errors %}<div class="text-danger small mt-1">{{ form.location.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-12">
                 <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Notes</label>
                 {{ form.notes }}
+                {% if form.notes.errors %}<div class="text-danger small mt-1">{{ form.notes.errors.0 }}</div>{% endif %}
               </div>
             </div>
 

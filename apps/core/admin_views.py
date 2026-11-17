@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db.models import Count, Q
 from apps.bookings.models import Booking
@@ -12,13 +12,24 @@ from apps.services.forms import ServiceForm, ServicePricingFormSet
 from apps.inquiries.models import Inquiry
 
 
+# Only staff accounts may use the admin panel (plain logged-in users are sent to login)
+login_required = user_passes_test(lambda u: u.is_active and u.is_staff, login_url='admin_login')
+
+
 def admin_login(request):
     if request.user.is_authenticated:
         return redirect('admin_dashboard')
     if request.method == 'POST':
-        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        user = authenticate(
+            request,
+            username=request.POST.get('username', ''),
+            password=request.POST.get('password', ''),
+        )
         if user and user.is_staff:
             login(request, user)
+            next_url = request.GET.get('next', '')
+            if next_url.startswith('/admin-panel/'):
+                return redirect(next_url)
             return redirect('admin_dashboard')
         messages.error(request, 'Invalid credentials or insufficient permissions.')
     return render(request, 'admin_panel/login.html')
@@ -133,29 +144,29 @@ def service_list(request):
     return render(request, 'admin_panel/services/list.html', {'services': services})
 
 
+def _service_form(request, service, title, success_msg):
+    form = ServiceForm(request.POST or None, instance=service)
+    formset = ServicePricingFormSet(request.POST or None, instance=service or Service(), prefix='pricing')
+    if request.method == 'POST' and form.is_valid() and formset.is_valid():
+        service = form.save()
+        formset.instance = service
+        formset.save()
+        messages.success(request, success_msg)
+        return redirect('admin_services')
+    return render(request, 'admin_panel/services/form.html', {
+        'form': form, 'formset': formset, 'title': title,
+    })
+
+
 @login_required
 def service_add(request):
-    form = ServiceForm()
-    if request.method == 'POST':
-        form = ServiceForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Service added.')
-            return redirect('admin_services')
-    return render(request, 'admin_panel/services/form.html', {'form': form, 'title': 'Add Service'})
+    return _service_form(request, None, 'Add Service', 'Service added.')
 
 
 @login_required
 def service_edit(request, pk):
     service = get_object_or_404(Service, pk=pk)
-    form = ServiceForm(instance=service)
-    if request.method == 'POST':
-        form = ServiceForm(request.POST, instance=service)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Service updated.')
-            return redirect('admin_services')
-    return render(request, 'admin_panel/services/form.html', {'form': form, 'title': 'Edit Service'})
+    return _service_form(request, service, 'Edit Service', 'Service updated.')
 
 
 @login_required

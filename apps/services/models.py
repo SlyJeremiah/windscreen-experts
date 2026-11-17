@@ -27,7 +27,7 @@ class ServicePricing(models.Model):
     ]
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='pricing')
     vehicle_type = models.CharField(max_length=50, choices=VEHICLE_CHOICES, blank=True)
-    label = models.CharField(max_length=100, help_text='e.g. "Chip Repair" or leave blank for vehicle type pricing')
+    label = models.CharField(max_length=100, blank=True, help_text='e.g. "Chip Repair" or leave blank for vehicle type pricing')
     price = models.DecimalField(max_digits=8, decimal_places=2)
     is_starting_price = models.BooleanField(default=True, help_text='Show as "from $X"')
 

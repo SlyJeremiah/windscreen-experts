@@ -106,15 +106,15 @@
 
     <!-- Filters -->
     <div class="d-flex gap-2 flex-wrap mb-5">
-      <a href="{% url 'gallery' %}" class="filter-btn {% if not service_filter %}active{% endif %}">All</a>
-      <a href="?type=image" class="filter-btn {% if request.GET.type == 'image' %}active{% endif %}">
+      <a href="{% url 'gallery' %}" class="filter-btn {% if not service_filter and not type_filter %}active{% endif %}">All</a>
+      <a href="?type=image" class="filter-btn {% if type_filter == 'image' %}active{% endif %}">
         <i class="bi bi-image me-1"></i>Photos
       </a>
-      <a href="?type=video" class="filter-btn {% if request.GET.type == 'video' %}active{% endif %}">
+      <a href="?type=video" class="filter-btn {% if type_filter == 'video' %}active{% endif %}">
         <i class="bi bi-play-circle me-1"></i>Videos
       </a>
       {% for service in services %}
-      <a href="?service={{ service.slug }}" class="filter-btn {% if service_filter == service.slug %}active{% endif %}">{{ service.name }}</a>
+      <a href="?service={{ service.slug|urlencode }}" class="filter-btn {% if service_filter == service.slug %}active{% endif %}">{{ service.name }}</a>
       {% endfor %}
     </div>
 
@@ -125,7 +125,7 @@
 
           {% if item.is_video %}
           <!-- VIDEO ITEM -->
-          <div class="gallery-video" onclick="openLightbox('{{ item.video.url }}', 'video')">
+          <div class="gallery-video" {% if item.video %}onclick="openLightbox('{{ item.video.url|escapejs }}', 'video')"{% endif %}>
             {% if item.video_thumbnail %}
             <img src="{{ item.video_thumbnail.url }}" style="width:100%;height:100%;object-fit:cover">
             {% endif %}
@@ -137,21 +137,23 @@
 
           {% else %}
           <!-- IMAGE ITEM -->
-          {% if item.before_image %}
+          {% if item.before_image and item.after_image %}
           <div class="row g-0">
             <div class="col-6 position-relative">
               <div class="gallery-img"><img src="{{ item.before_image.url }}" alt="Before"></div>
               <span class="position-absolute top-0 start-0 m-2 badge" style="background:rgba(0,0,0,0.7);font-size:.65rem;letter-spacing:1px">BEFORE</span>
             </div>
-            <div class="col-6 position-relative" onclick="openLightbox('{{ item.after_image.url }}', 'image')">
+            <div class="col-6 position-relative" style="cursor:pointer" onclick="openLightbox('{{ item.after_image.url|escapejs }}', 'image')">
               <div class="gallery-img"><img src="{{ item.after_image.url }}" alt="After"></div>
               <span class="position-absolute top-0 start-0 m-2 badge bg-primary" style="font-size:.65rem;letter-spacing:1px">AFTER</span>
             </div>
           </div>
-          {% elif item.after_image %}
-          <div class="gallery-img" onclick="openLightbox('{{ item.after_image.url }}', 'image')" style="cursor:pointer">
-            <img src="{{ item.after_image.url }}" alt="{{ item.title }}">
+          {% elif item.after_image or item.before_image %}
+          {% with img=item.after_image|default:item.before_image %}
+          <div class="gallery-img" onclick="openLightbox('{{ img.url|escapejs }}', 'image')" style="cursor:pointer">
+            <img src="{{ img.url }}" alt="{{ item.title }}" loading="lazy">
           </div>
+          {% endwith %}
           {% endif %}
           {% endif %}
 

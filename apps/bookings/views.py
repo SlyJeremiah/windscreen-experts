@@ -6,7 +6,10 @@ from .forms import BookingForm
 from .models import Booking
 
 def booking_create(request):
-    form = BookingForm()
+    initial = {}
+    if request.GET.get('service', '').isdigit():
+        initial['service'] = request.GET['service']
+    form = BookingForm(initial=initial)
     if request.method == 'POST':
         form = BookingForm(request.POST)
         if form.is_valid():

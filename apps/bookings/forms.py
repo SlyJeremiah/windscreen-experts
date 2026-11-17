@@ -1,4 +1,7 @@
+import datetime
+
 from django import forms
+from django.utils import timezone
 from .models import Booking
 from apps.services.models import Service
 
@@ -38,6 +41,20 @@ class BookingForm(forms.ModelForm):
         self.fields['vehicle_model'].required = False
         self.fields['vehicle_year'].required = False
         self.fields['notes'].required = False
+        self.fields['service'].empty_label = 'Select a service'
+        self.fields['preferred_date'].widget.attrs['min'] = timezone.localdate().isoformat()
+
+    def clean_preferred_date(self):
+        date = self.cleaned_data['preferred_date']
+        if date < timezone.localdate():
+            raise forms.ValidationError('Please choose today or a future date.')
+        return date
+
+    def clean_vehicle_year(self):
+        year = self.cleaned_data.get('vehicle_year')
+        if year and not (1950 <= year <= datetime.date.today().year + 1):
+            raise forms.ValidationError('Please enter a valid vehicle year.')
+        return year
 
 
 class BookingStatusForm(forms.ModelForm):

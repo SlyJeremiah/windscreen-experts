@@ -3,10 +3,10 @@
 {% block page_title %}{{ title }}{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-lg-7">
-    <div class="bg-white rounded-3 shadow-sm p-4">
-      <form method="post">
-        {% csrf_token %}
+  <div class="col-lg-8">
+    <form method="post">
+      {% csrf_token %}
+      <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
         {% for field in form %}
         <div class="mb-3">
           <label class="form-label fw-semibold small">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
@@ -15,12 +15,36 @@
           {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors.0 }}</div>{% endif %}
         </div>
         {% endfor %}
-        <div class="d-flex gap-2 mt-4">
-          <button type="submit" class="btn btn-primary px-4">Save Service</button>
-          <a href="{% url 'admin_services' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+
+      <div class="bg-white rounded-3 shadow-sm p-4">
+        <h6 class="fw-bold mb-1">Pricing</h6>
+        <p class="text-muted small mb-3">Use a label (e.g. “Chip Repair”) or a vehicle type. Tick “Delete” to remove a row. Save to get more blank rows.</p>
+        {{ formset.management_form }}
+        {% if formset.non_form_errors %}<div class="alert alert-danger small">{{ formset.non_form_errors }}</div>{% endif %}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead><tr class="small text-muted"><th>Vehicle type</th><th>Label</th><th style="width:130px">Price ($)</th><th class="text-center">“From”</th><th class="text-center">Delete</th></tr></thead>
+            <tbody>
+              {% for pf in formset %}
+              <tr>
+                <td>{% for hidden in pf.hidden_fields %}{{ hidden }}{% endfor %}{{ pf.vehicle_type }}</td>
+                <td>{{ pf.label }}{% if pf.label.errors %}<div class="text-danger small">{{ pf.label.errors.0 }}</div>{% endif %}</td>
+                <td>{{ pf.price }}{% if pf.price.errors %}<div class="text-danger small">{{ pf.price.errors.0 }}</div>{% endif %}</td>
+                <td class="text-center">{{ pf.is_starting_price }}</td>
+                <td class="text-center">{% if pf.instance.pk %}{{ pf.DELETE }}{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-      </form>
-    </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary px-4">Save Service</button>
+        <a href="{% url 'admin_services' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}
