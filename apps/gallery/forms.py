@@ -1,6 +1,9 @@
 from django import forms
 from .models import GalleryItem
 
+# Uploads pass through a Vercel function, which rejects request bodies over 4.5 MB
+MAX_UPLOAD_MB = 4
+
 class GalleryItemForm(forms.ModelForm):
     class Meta:
         model  = GalleryItem
@@ -33,5 +36,11 @@ class GalleryItemForm(forms.ModelForm):
         if media_type == 'video' and not video:
             if not self.instance.pk or not self.instance.video:
                 self.add_error('video', 'Please upload a video file.')
+
+        for field in ('before_image', 'after_image', 'video', 'video_thumbnail'):
+            f = cleaned_data.get(field)
+            if f and getattr(f, 'size', 0) > MAX_UPLOAD_MB * 1024 * 1024:
+                self.add_error(field, f'File is too large ({f.size / 1024 / 1024:.1f} MB). '
+                                      f'Please keep uploads under {MAX_UPLOAD_MB} MB.')
 
         return cleaned_data

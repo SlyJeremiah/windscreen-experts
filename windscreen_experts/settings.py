@@ -98,9 +98,26 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Media / File Storage
-SUPABASE_PROJECT_ID = 'dclubpjyohcduympiskl'
-
-if os.environ.get('USE_SUPABASE_STORAGE') == 'True':
+# Vercel's filesystem is read-only, so uploads must go to object storage in production.
+if os.environ.get('USE_BACKBLAZE') == 'True':
+    # Backblaze B2 via its S3-compatible API. B2_ENDPOINT_URL may be given with or
+    # without https://, e.g. s3.us-east-005.backblazeb2.com
+    _b2_host = os.environ.get('B2_ENDPOINT_URL', '').replace('https://', '').replace('http://', '').strip('/')
+    DEFAULT_FILE_STORAGE    = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID       = os.environ.get('B2_KEY_ID')
+    AWS_SECRET_ACCESS_KEY   = os.environ.get('B2_APPLICATION_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('B2_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL     = f'https://{_b2_host}'
+    AWS_S3_REGION_NAME      = _b2_host.split('.')[1] if _b2_host.count('.') >= 2 else None  # us-east-005
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_DEFAULT_ACL         = None   # B2 visibility is set on the bucket (must be Public)
+    AWS_QUERYSTRING_AUTH    = False
+    AWS_S3_FILE_OVERWRITE   = False
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'public, max-age=86400'}
+    AWS_S3_CUSTOM_DOMAIN    = f'{AWS_STORAGE_BUCKET_NAME}.{_b2_host}'
+    MEDIA_URL               = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+elif os.environ.get('USE_SUPABASE_STORAGE') == 'True':
+    SUPABASE_PROJECT_ID = os.environ.get('SUPABASE_PROJECT_ID', 'dclubpjyohcduympiskl')
     DEFAULT_FILE_STORAGE  = 'storages.backends.s3boto3.S3Boto3Storage'
     AWS_ACCESS_KEY_ID     = os.environ.get('SUPABASE_STORAGE_KEY')
     AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_STORAGE_SECRET')
@@ -110,10 +127,8 @@ if os.environ.get('USE_SUPABASE_STORAGE') == 'True':
     AWS_DEFAULT_ACL       = 'public-read'
     AWS_QUERYSTRING_AUTH  = False
     AWS_S3_FILE_OVERWRITE = False
-    AWS_S3_VERIFY         = True
-    # This forces Django to build image URLs using the public path
     AWS_S3_CUSTOM_DOMAIN  = f'{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/media'
-    MEDIA_URL = f'https://{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/media/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 else:
     MEDIA_URL  = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
