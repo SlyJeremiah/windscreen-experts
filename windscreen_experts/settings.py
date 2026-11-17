@@ -4,8 +4,17 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def env_bool(name, default=False):
+    """Read a true/false env var, accepting True/true/1/yes/on (whitespace ignored)."""
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # kept strict on purpose
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '.vercel.app']
 CSRF_TRUSTED_ORIGINS = [
     'https://windscreen-experts.vercel.app',
@@ -99,14 +108,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Media / File Storage
 # Vercel's filesystem is read-only, so uploads must go to object storage in production.
-if os.environ.get('USE_BACKBLAZE') == 'True':
+if env_bool('USE_BACKBLAZE'):
     # Backblaze B2 via its S3-compatible API. B2_ENDPOINT_URL may be given with or
     # without https://, e.g. s3.us-east-005.backblazeb2.com
-    _b2_host = os.environ.get('B2_ENDPOINT_URL', '').replace('https://', '').replace('http://', '').strip('/')
+    _b2_host = os.environ.get('B2_ENDPOINT_URL', '').strip().replace('https://', '').replace('http://', '').strip('/')
     DEFAULT_FILE_STORAGE    = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID       = os.environ.get('B2_KEY_ID')
-    AWS_SECRET_ACCESS_KEY   = os.environ.get('B2_APPLICATION_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('B2_BUCKET_NAME')
+    AWS_ACCESS_KEY_ID       = os.environ.get('B2_KEY_ID', '').strip()
+    AWS_SECRET_ACCESS_KEY   = os.environ.get('B2_APPLICATION_KEY', '').strip()
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('B2_BUCKET_NAME', '').strip()
     AWS_S3_ENDPOINT_URL     = f'https://{_b2_host}'
     AWS_S3_REGION_NAME      = _b2_host.split('.')[1] if _b2_host.count('.') >= 2 else None  # us-east-005
     AWS_S3_SIGNATURE_VERSION = 's3v4'
@@ -116,7 +125,7 @@ if os.environ.get('USE_BACKBLAZE') == 'True':
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'public, max-age=86400'}
     AWS_S3_CUSTOM_DOMAIN    = f'{AWS_STORAGE_BUCKET_NAME}.{_b2_host}'
     MEDIA_URL               = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-elif os.environ.get('USE_SUPABASE_STORAGE') == 'True':
+elif env_bool('USE_SUPABASE_STORAGE'):
     SUPABASE_PROJECT_ID = os.environ.get('SUPABASE_PROJECT_ID', 'dclubpjyohcduympiskl')
     DEFAULT_FILE_STORAGE  = 'storages.backends.s3boto3.S3Boto3Storage'
     AWS_ACCESS_KEY_ID     = os.environ.get('SUPABASE_STORAGE_KEY')
