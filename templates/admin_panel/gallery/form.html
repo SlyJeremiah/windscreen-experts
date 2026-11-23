@@ -1,129 +1,299 @@
 {% extends 'admin_panel/base.html' %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ title }} – Admin{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block extra_css %}
+<style>
+  .gf-card { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); max-width:720px; }
+  .gf-label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#6c757d; margin-bottom:.4rem; display:block; }
+  .gf-file { border:2px dashed #d5dbe8; border-radius:12px; padding:16px; background:#fafbfe; }
+  .gf-file.has-file { border-style:solid; border-color:var(--we-bright); background:#f4f7ff; }
+  .gf-file input[type=file] { font-size:.9rem; }
+  .gf-preview { margin-top:10px; display:flex; align-items:center; gap:12px; }
+  .gf-preview img, .gf-preview video { height:84px; max-width:140px; border-radius:8px; object-fit:cover; background:#000; }
+  .gf-preview .meta { font-size:.8rem; color:#6c757d; word-break:break-all; }
+  .gf-current { font-size:.8rem; color:#6c757d; margin-bottom:8px; }
+  .gf-current img, .gf-current video { height:64px; border-radius:6px; object-fit:cover; display:block; margin-top:4px; }
+  /* Django's ClearableFileInput prints "Currently/Change" text; keep it tidy */
+  .gf-file .clearable { font-size:.8rem; }
+  #upload-status { display:none; }
+  @media (max-width: 576px) {
+    .gf-card { padding:16px !important; }
+    .btn-save { width:100%; }
+  }
+</style>
+{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="fw-bold mb-0">{{ title }}</h4>
-  <a href="{% url 'admin_gallery' %}" class="btn btn-outline-light btn-sm">← Back</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="{% url 'admin_gallery' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back to gallery</a>
 </div>
 
 {% if form.errors %}
-<div class="alert alert-danger mb-4">
-  <strong>Please fix the following errors:</strong>
+<div class="alert alert-danger">
+  <strong>Please fix the following:</strong>
   <ul class="mb-0 mt-2">
-    {% for field, errors in form.errors.items %}
-      {% for error in errors %}
-        <li>{{ field }}: {{ error }}</li>
-      {% endfor %}
-    {% endfor %}
+    {% for field, errors in form.errors.items %}{% for error in errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
   </ul>
 </div>
 {% endif %}
 
-<div class="card-panel p-4" style="max-width:700px">
-  <form method="post" enctype="multipart/form-data" novalidate>
+<div class="gf-card p-4">
+  <form method="post" enctype="multipart/form-data" novalidate id="gallery-form">
     {% csrf_token %}
+    {{ form.before_image_key }}{{ form.after_image_key }}{{ form.video_key }}{{ form.video_thumbnail_key }}
 
-    <!-- Media Type -->
-    <div class="mb-4">
-      <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Media Type *</label>
+    <div class="mb-3">
+      <label class="gf-label" for="id_media_type">Media type *</label>
       {{ form.media_type }}
     </div>
 
-    <!-- Basic Info -->
     <div class="row g-3 mb-3">
-      <div class="col-md-8">
-        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Title *</label>
+      <div class="col-sm-8">
+        <label class="gf-label" for="id_title">Title *</label>
         {{ form.title }}
-        {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors }}</div>{% endif %}
+        {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>{% endif %}
       </div>
-      <div class="col-md-4">
-        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Order</label>
+      <div class="col-sm-4">
+        <label class="gf-label" for="id_order">Order</label>
         {{ form.order }}
       </div>
-    </div>
-
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Service</label>
+      <div class="col-sm-6">
+        <label class="gf-label" for="id_service">Service</label>
         {{ form.service }}
       </div>
-      <div class="col-md-6">
-        <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Vehicle Type</label>
+      <div class="col-sm-6">
+        <label class="gf-label" for="id_vehicle_type">Vehicle type</label>
         {{ form.vehicle_type }}
       </div>
     </div>
 
-    <!-- IMAGE FIELDS -->
+    <!-- PHOTOS -->
     <div id="image-fields">
-      <div class="mb-3 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
-        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Before Image (optional)</p>
+      <div class="gf-file mb-3" data-field="before_image">
+        <label class="gf-label" for="id_before_image">Before photo (optional)</label>
+        {% if form.instance.before_image %}<div class="gf-current">Current:<img src="{{ form.instance.before_image.url }}" alt=""></div>{% endif %}
         {{ form.before_image }}
-        {% if form.instance.before_image %}
-        <div class="mt-2"><img src="{{ form.instance.before_image.url }}" style="height:80px;border-radius:6px;object-fit:cover"></div>
-        {% endif %}
+        <div class="gf-preview"></div>
+        {% if form.before_image.errors %}<div class="text-danger small mt-1">{{ form.before_image.errors.0 }}</div>{% endif %}
       </div>
-      <div class="mb-4 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
-        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">After Image *</p>
+      <div class="gf-file mb-3" data-field="after_image">
+        <label class="gf-label" for="id_after_image">After photo *</label>
+        {% if form.instance.after_image %}<div class="gf-current">Current:<img src="{{ form.instance.after_image.url }}" alt=""></div>{% endif %}
         {{ form.after_image }}
-        {% if form.after_image.errors %}<div class="text-danger small mt-1">{{ form.after_image.errors }}</div>{% endif %}
-        {% if form.instance.after_image %}
-        <div class="mt-2"><img src="{{ form.instance.after_image.url }}" style="height:80px;border-radius:6px;object-fit:cover"></div>
-        {% endif %}
+        <div class="gf-preview"></div>
+        {% if form.after_image.errors %}<div class="text-danger small mt-1">{{ form.after_image.errors.0 }}</div>{% endif %}
       </div>
     </div>
 
-    <!-- VIDEO FIELDS -->
+    <!-- VIDEO -->
     <div id="video-fields" style="display:none">
-      <div class="mb-3 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
-        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video File * (mp4, webm)</p>
+      <div class="gf-file mb-3" data-field="video">
+        <label class="gf-label" for="id_video">Video *</label>
+        {% if form.instance.video %}<div class="gf-current">Current:<video src="{{ form.instance.video.url }}" muted playsinline></video></div>{% endif %}
         {{ form.video }}
-        {% if form.video.errors %}<div class="text-danger small mt-1">{{ form.video.errors }}</div>{% endif %}
-        {% if form.instance.video %}
-        <div class="mt-2"><video src="{{ form.instance.video.url }}" style="height:80px;border-radius:6px" controls></video></div>
-        {% endif %}
+        <div class="gf-preview"></div>
+        {% if form.video.errors %}<div class="text-danger small mt-1">{{ form.video.errors.0 }}</div>{% endif %}
       </div>
-      <div class="mb-4 p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
-        <p class="text-we fw-bold text-uppercase mb-3" style="font-size:.72rem;letter-spacing:2px">Video Thumbnail (optional)</p>
+      <div class="gf-file mb-3" data-field="video_thumbnail">
+        <label class="gf-label" for="id_video_thumbnail">Thumbnail (optional – taken from the video if left empty)</label>
+        {% if form.instance.video_thumbnail %}<div class="gf-current">Current:<img src="{{ form.instance.video_thumbnail.url }}" alt=""></div>{% endif %}
         {{ form.video_thumbnail }}
-        {% if form.instance.video_thumbnail %}
-        <div class="mt-2"><img src="{{ form.instance.video_thumbnail.url }}" style="height:80px;border-radius:6px;object-fit:cover"></div>
-        {% endif %}
+        <div class="gf-preview"></div>
+        {% if form.video_thumbnail.errors %}<div class="text-danger small mt-1">{{ form.video_thumbnail.errors.0 }}</div>{% endif %}
       </div>
     </div>
 
     <div class="mb-3">
-      <label class="form-label text-white-50 small text-uppercase" style="letter-spacing:1.5px">Description</label>
+      <label class="gf-label" for="id_description">Description</label>
       {{ form.description }}
     </div>
 
     <div class="form-check form-switch mb-4">
       {{ form.is_featured }}
-      <label class="form-check-label text-white-50 ms-2">Featured on homepage</label>
+      <label class="form-check-label ms-1" for="id_is_featured">Featured on homepage</label>
     </div>
 
-    <button type="submit" class="btn btn-primary-we px-5"
-            style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.1rem">
-      Save
-    </button>
+    <div id="upload-status" class="mb-3">
+      <div class="small fw-semibold mb-1" id="upload-label">Uploading…</div>
+      <div class="progress" style="height:10px"><div class="progress-bar" id="upload-bar" style="width:0%"></div></div>
+    </div>
+    <div id="upload-error" class="alert alert-danger small" style="display:none"></div>
+
+    <button type="submit" class="btn btn-primary btn-save px-5" id="save-btn">Save</button>
   </form>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-  const mediaTypeSelect = document.getElementById('id_media_type');
+(function () {
+  const DIRECT = {{ direct_uploads|yesno:"true,false" }};
+  const UPLOAD_URL = "{% url 'admin_gallery_upload_url' %}";
+  const MAX_POST_BYTES = 4 * 1024 * 1024;     // what fits through the server in one request
+  const MAX_PHOTO_SIDE = 2000;                // shrink phone photos to this many pixels
+
+  const form = document.getElementById('gallery-form');
+  const mediaType = document.getElementById('id_media_type');
   const imageFields = document.getElementById('image-fields');
   const videoFields = document.getElementById('video-fields');
+  const statusBox = document.getElementById('upload-status');
+  const statusLabel = document.getElementById('upload-label');
+  const bar = document.getElementById('upload-bar');
+  const errorBox = document.getElementById('upload-error');
+  const saveBtn = document.getElementById('save-btn');
+  const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+  let videoFrame = null;   // JPEG taken from the chosen video, used as a thumbnail
 
   function toggleFields() {
-    if (mediaTypeSelect.value === 'video') {
-      imageFields.style.display = 'none';
-      videoFields.style.display = 'block';
-    } else {
-      imageFields.style.display = 'block';
-      videoFields.style.display = 'none';
-    }
+    const isVideo = mediaType.value === 'video';
+    imageFields.style.display = isVideo ? 'none' : 'block';
+    videoFields.style.display = isVideo ? 'block' : 'none';
+  }
+  mediaType.addEventListener('change', toggleFields);
+  toggleFields();
+
+  function mb(bytes) { return (bytes / 1024 / 1024).toFixed(1) + ' MB'; }
+
+  // Preview what was picked
+  document.querySelectorAll('.gf-file').forEach(function (box) {
+    const input = box.querySelector('input[type=file]');
+    const preview = box.querySelector('.gf-preview');
+    input.addEventListener('change', function () {
+      preview.innerHTML = '';
+      box.classList.toggle('has-file', input.files.length > 0);
+      const file = input.files[0];
+      if (!file) { if (box.dataset.field === 'video') videoFrame = null; return; }
+      const url = URL.createObjectURL(file);
+      const el = document.createElement(file.type.startsWith('video/') ? 'video' : 'img');
+      el.src = url;
+      if (el.tagName === 'VIDEO') { el.muted = true; el.playsInline = true; el.preload = 'metadata'; }
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = file.name + ' · ' + mb(file.size);
+      preview.append(el, meta);
+      if (box.dataset.field === 'video') grabVideoFrame(url);
+    });
+  });
+
+  // Take a frame ~1s into the video for a thumbnail
+  function grabVideoFrame(url) {
+    videoFrame = null;
+    const v = document.createElement('video');
+    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+    v.addEventListener('loadeddata', function () {
+      v.currentTime = Math.min(1, (v.duration || 2) / 2);
+    });
+    v.addEventListener('seeked', function () {
+      try {
+        const scale = Math.min(1, 1280 / Math.max(v.videoWidth, v.videoHeight));
+        const c = document.createElement('canvas');
+        c.width = Math.round(v.videoWidth * scale); c.height = Math.round(v.videoHeight * scale);
+        c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+        c.toBlob(function (b) { if (b) videoFrame = b; }, 'image/jpeg', 0.82);
+      } catch (e) { /* some phones block this; the thumbnail just stays empty */ }
+    }, { once: true });
   }
 
-  mediaTypeSelect.addEventListener('change', toggleFields);
-  toggleFields();
+  // Shrink big photos before sending (much faster on mobile data)
+  function shrinkPhoto(file) {
+    return new Promise(function (resolve) {
+      if (!/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type)) return resolve(file);
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = function () {
+        const side = Math.max(img.naturalWidth, img.naturalHeight);
+        if (side <= MAX_PHOTO_SIDE && file.size <= 1.5 * 1024 * 1024) { URL.revokeObjectURL(url); return resolve(file); }
+        const scale = Math.min(1, MAX_PHOTO_SIDE / side);
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) {
+          if (!b || b.size >= file.size) return resolve(file);
+          const name = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+          resolve(new File([b], name, { type: 'image/jpeg' }));
+        }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };  // e.g. HEIC on Android: send as is
+      img.src = url;
+    });
+  }
+
+  function putToStorage(field, file, label) {
+    return fetch(UPLOAD_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+      body: JSON.stringify({ field: field, filename: file.name, content_type: file.type, size: file.size }),
+      credentials: 'same-origin',
+    }).then(function (r) {
+      return r.json().catch(function () { return { error: 'Your session may have expired. Please log in again.' }; })
+        .then(function (d) { if (!r.ok || d.error) throw new Error(d.error || 'Could not start the upload.'); return d; });
+    }).then(function (d) {
+      return new Promise(function (resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', d.url);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) bar.style.width = Math.round(e.loaded / e.total * 100) + '%';
+        };
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(d.key);
+          else reject(new Error('Upload failed (' + xhr.status + '). Please try again.'));
+        };
+        xhr.onerror = function () { reject(new Error('Upload failed – check your connection and try again.')); };
+        statusLabel.textContent = label + ' (' + mb(file.size) + ')';
+        bar.style.width = '0%';
+        xhr.send(file);
+      });
+    });
+  }
+
+  form.addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    errorBox.style.display = 'none';
+    const isVideo = mediaType.value === 'video';
+    const active = isVideo ? ['video', 'video_thumbnail'] : ['before_image', 'after_image'];
+    const inactive = isVideo ? ['before_image', 'after_image'] : ['video', 'video_thumbnail'];
+    // Never send files from the hidden section
+    inactive.forEach(function (f) { const i = document.getElementById('id_' + f); if (i) i.value = ''; });
+
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    try {
+      const jobs = [];
+      for (const f of active) {
+        const input = document.getElementById('id_' + f);
+        if (input && input.files[0]) jobs.push({ field: f, input: input, file: input.files[0] });
+      }
+      if (isVideo && videoFrame && !jobs.some(function (j) { return j.field === 'video_thumbnail'; })
+          && jobs.some(function (j) { return j.field === 'video'; })) {
+        jobs.push({ field: 'video_thumbnail', input: null, file: new File([videoFrame], 'thumbnail.jpg', { type: 'image/jpeg' }) });
+      }
+
+      for (let n = 0; n < jobs.length; n++) {
+        const job = jobs[n];
+        let file = job.file;
+        if (file.type.startsWith('image/')) file = await shrinkPhoto(file);
+        if (DIRECT) {
+          statusBox.style.display = 'block';
+          const key = await putToStorage(job.field, file, 'Uploading ' + (n + 1) + ' of ' + jobs.length);
+          document.getElementById('id_' + job.field + '_key').value = key;
+          if (job.input) job.input.value = '';   // already in storage; don't send it again
+        } else if (job.input) {
+          if (file.size > MAX_POST_BYTES) throw new Error(file.name + ' is ' + mb(file.size) + '. Files must be under 4 MB.');
+          if (file !== job.file && window.DataTransfer) {
+            const dt = new DataTransfer(); dt.items.add(file); job.input.files = dt.files;
+          }
+        }
+      }
+      statusLabel.textContent = 'Saving…';
+      bar.style.width = '100%';
+      HTMLFormElement.prototype.submit.call(form);
+    } catch (err) {
+      statusBox.style.display = 'none';
+      errorBox.textContent = err.message;
+      errorBox.style.display = 'block';
+      saveBtn.disabled = false; saveBtn.textContent = 'Save';
+    }
+  });
+})();
 </script>
 {% endblock %}

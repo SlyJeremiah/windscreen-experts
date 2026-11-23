@@ -72,8 +72,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'windscreen_experts.wsgi.application'
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+    'default': dj_database_url.parse(
+        # A blank DATABASE_URL falls back to the local SQLite file instead of breaking
+        os.environ.get('DATABASE_URL', '').strip() or f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         # Serverless: don't hold connections between invocations
         conn_max_age=0,
     )

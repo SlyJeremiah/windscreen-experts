@@ -1,4 +1,12 @@
+import json
+import os
+import uuid
+
+from django.core.files.storage import default_storage
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.text import get_valid_filename
+from django.views.decorators.http import require_POST
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
@@ -6,7 +14,7 @@ from django.db.models import Count, Q
 from apps.bookings.models import Booking
 from apps.bookings.forms import BookingStatusForm
 from apps.gallery.models import GalleryItem
-from apps.gallery.forms import GalleryItemForm
+from apps.gallery.forms import GalleryItemForm, MAX_DIRECT_UPLOAD_MB, UPLOAD_FOLDERS
 from apps.services.models import Service, ServicePricing
 from apps.services.forms import ServiceForm, ServicePricingFormSet
 from apps.inquiries.models import Inquiry
@@ -102,6 +110,55 @@ def gallery_list(request):
     return render(request, 'admin_panel/gallery/list.html', {'items': items})
 
 
+def direct_uploads_enabled():
+    """True when media lives in S3-compatible storage (Backblaze B2) that browsers can PUT to."""
+    return hasattr(default_storage, 'bucket_name') and hasattr(default_storage, 'connection')
+
+
+@login_required
+@require_POST
+def gallery_upload_url(request):
+    """Give the browser a short-lived link to upload one gallery file straight to storage.
+
+    Phone photos and videos are usually bigger than the 4.5 MB a Vercel function
+    accepts, so the browser sends the file to B2 itself and posts only the storage key.
+    """
+    if not direct_uploads_enabled():
+        return JsonResponse({'error': 'Direct uploads are not available.'}, status=400)
+    try:
+        data = json.loads(request.body)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+    field = data.get('field')
+    content_type = str(data.get('content_type') or '')
+    size = data.get('size')
+    if field not in UPLOAD_FOLDERS:
+        return JsonResponse({'error': 'Unknown field.'}, status=400)
+    if not content_type.startswith('video/' if field == 'video' else 'image/'):
+        kind = 'a video' if field == 'video' else 'an image'
+        return JsonResponse({'error': f'Please choose {kind} file.'}, status=400)
+    if not isinstance(size, int) or size <= 0 or size > MAX_DIRECT_UPLOAD_MB * 1024 * 1024:
+        return JsonResponse({'error': f'Files must be under {MAX_DIRECT_UPLOAD_MB} MB.'}, status=400)
+
+    filename = get_valid_filename(os.path.basename(str(data.get('filename') or 'upload')))
+    name, ext = os.path.splitext(filename)
+    key = f"{UPLOAD_FOLDERS[field]}{uuid.uuid4().hex[:12]}-{(name or 'upload')[:60]}{ext[:10].lower()}"
+    client = default_storage.connection.meta.client
+    url = client.generate_presigned_url(
+        'put_object',
+        Params={'Bucket': default_storage.bucket_name, 'Key': key, 'ContentType': content_type},
+        ExpiresIn=900,
+    )
+    return JsonResponse({'url': url, 'key': key})
+
+
+def _gallery_form_page(request, form, title):
+    return render(request, 'admin_panel/gallery/form.html', {
+        'form': form, 'title': title, 'direct_uploads': direct_uploads_enabled(),
+    })
+
+
 @login_required
 def gallery_add(request):
     form = GalleryItemForm()
@@ -111,7 +168,7 @@ def gallery_add(request):
             form.save()
             messages.success(request, 'Gallery item added.')
             return redirect('admin_gallery')
-    return render(request, 'admin_panel/gallery/form.html', {'form': form, 'title': 'Add Gallery Item'})
+    return _gallery_form_page(request, form, 'Add Gallery Item')
 
 
 @login_required
@@ -124,7 +181,7 @@ def gallery_edit(request, pk):
             form.save()
             messages.success(request, 'Gallery item updated.')
             return redirect('admin_gallery')
-    return render(request, 'admin_panel/gallery/form.html', {'form': form, 'title': 'Edit Gallery Item'})
+    return _gallery_form_page(request, form, 'Edit Gallery Item')
 
 
 @login_required

@@ -14,6 +14,7 @@ urlpatterns = [
     # Gallery
     path('gallery/', admin_views.gallery_list, name='admin_gallery'),
     path('gallery/add/', admin_views.gallery_add, name='admin_gallery_add'),
+    path('gallery/upload-url/', admin_views.gallery_upload_url, name='admin_gallery_upload_url'),
     path('gallery/<int:pk>/edit/', admin_views.gallery_edit, name='admin_gallery_edit'),
     path('gallery/<int:pk>/delete/', admin_views.gallery_delete, name='admin_gallery_delete'),
 
